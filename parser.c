@@ -1,5 +1,6 @@
 #include "parser.h"
 
+
 void parser()
 {
     FILE *file;
@@ -18,6 +19,7 @@ void parser()
     int linecount =0;
     int def = 0;
     char holder[100] = "";
+    memset(holder,0,strlen(holder));
     while(1)
     {
         
@@ -27,11 +29,11 @@ void parser()
 
         def = lexicon(contents);
 
-         if(def == OP || def ==  EQ)
+         if(def == OP || def ==  EQ || isBegin(holder))
          {
              //printf("hi\n");
-             printf("%s\n", holder);
-             isBegin(holder);
+            // printf("%s\n", holder);
+
              isEnd(holder);
              memset(holder,0,strlen(holder));
 
@@ -67,17 +69,42 @@ void parser()
     fclose(file);
 }
 
-_Bool syntaxChecker(char input[])
+bool syntaxChecker(char input[])
 {
 
 }
 
-_Bool isBegin(char input[])
+bool isBegin(char input[])
 {
+    char begin[] = "begin";
 
+    if(strcmp(input, begin) == 0)
+    {
+        printf("works");
+        return true;
+    }
+/*
+    for(int i=0; i < 5; i++)
+    {
+        if(input[i] == begin[i])
+        {
+            if(i == 4)
+            {
+                //printf("%s", input);
+                return true;
+            }
+        }
+        else 
+        {
+            break;
+        } 
+        return false;
+
+    }*/
+    return false;
 }
 
-_Bool isEnd(char input[])
+bool isEnd(char input[])
 {
 
 }

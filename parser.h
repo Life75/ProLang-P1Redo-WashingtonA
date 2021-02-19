@@ -2,6 +2,7 @@
 #define PARSER_H_INCLUDED
 #include <stdio.h>
 #include "lexicon.h"
+#include <stdbool.h>
 #include <string.h>
 /*
 #define ID 300
@@ -15,9 +16,9 @@
 
 
 void parser();
-_Bool syntaxChecker();
-_Bool isBegin(char input[]);
-_Bool isEnd(char input[]);
+bool syntaxChecker(char input[]);
+bool isBegin(char input[]);
+bool isEnd(char input[]);
 
 #endif
 
