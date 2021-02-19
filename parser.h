@@ -4,6 +4,7 @@
 #include "lexicon.h"
 #include <stdbool.h>
 #include <string.h>
+#include "symbolTable.h"
 /*
 #define ID 300
 #define NUM 301
@@ -13,12 +14,20 @@
 #define END 401
 #define DONE 402
 */
+#define TableSize 100
 
 
 void parser();
 bool syntaxChecker(char input[]);
 bool isBegin(char input[]);
 bool isEnd(char input[]);
+bool inputInSymbolTable(char input[]);
+//need error detection and outputing it out func
+
+
+extern bool hasEnd;
+extern bool hasBegin;
+//extern SymbolTable symbolTable;
 
 #endif
 

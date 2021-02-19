@@ -4,8 +4,13 @@ int lexicon(char ch)
 {
     if(ch == 32 || ch == '\t')
     {
-        //printf("tab here \n");
-    }   
+        //printf("tab space \n");
+        return SPACE;
+    }  
+    else if(ch == 59)
+    {
+        return SEMICOLON;
+    } 
     else if(ch == 61 ) //=
     {
         return EQ;
@@ -23,6 +28,11 @@ int lexicon(char ch)
     {
        
         return ID;
+    }
+    else if(ch == 46)
+    {
+        //printf("end");
+        return END;
     }
     else if (ch == EOF)
     {
