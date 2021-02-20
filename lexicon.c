@@ -15,6 +15,14 @@ int lexicon(char ch)
     {
         return EQ;
     }
+    else if(ch ==40)
+    {
+        return LEFT_PAR;
+    }
+    else if(ch == 41)
+    {
+        return RIGHT_PAR;
+    }
     else if(ch == 42 || ch == 43 || ch == 45 || ch == 47 || ch == 37)
     {
          //printf("working\n");

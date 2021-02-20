@@ -22,6 +22,9 @@ bool syntaxChecker(char input[]);
 bool isBegin(char input[]);
 bool isEnd(char input[]);
 bool inputInSymbolTable(char input[]);
+void prediction(int def);
+void match();
+int IDorNum(char input[]);
 //need error detection and outputing it out func
 
 

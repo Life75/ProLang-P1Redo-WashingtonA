@@ -13,6 +13,15 @@ struct SymbolTable
 //keeps track of the amount of EQ and LEFT_PAR RIGHT_PAR in a given statement 
 struct StatementTable
 {
-    char data[10];
+    int eqCounter;
+    int leftParCounter;
+    int rightParCounter;
+};
+
+struct BackTrace
+{
+    int firstState;
+    int secondState;
+    int currentLine;
 };
 #endif

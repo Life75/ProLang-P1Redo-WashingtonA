@@ -8,9 +8,14 @@
 #define OP 304
 #define SEMICOLON 305
 #define SPACE 306
+#define LEFT_PAR 307
+#define RIGHT_PAR 308
 #define BEGIN 400
 #define END 401
 #define DONE 402
+#define ERROR 999
+#define PASS 404
+
 
 int lexicon(char ch);
 #endif
