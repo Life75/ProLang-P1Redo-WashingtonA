@@ -53,3 +53,52 @@ int lexicon(char ch)
     else return ch;
    // return;
 }
+
+
+
+char *translator(int def)
+{
+    static char word[50];
+
+    if(def == ID)
+    {
+        strcpy(word, "Identifier");
+        
+    }
+
+    if(def == NUM)
+    {
+        strcpy(word, "Number");
+        
+    }
+
+    if(def == EQ) 
+    {
+        strcpy(word, "=");
+        
+    }
+
+    if(def == OP)
+    {
+        strcpy(word, "operator");
+    }  
+
+    if(def == SEMICOLON)
+    {
+        strcpy(word, ";");
+    }  
+
+    if(def == LEFT_PAR)
+    {
+        strcpy(word, "(");
+    }      
+
+    if(def == RIGHT_PAR)
+    {
+        strcpy(word, ")");
+    }  
+   
+
+    return word;
+
+}

@@ -33,6 +33,7 @@ int parser() {
     for(int i=0; i < 100; i++)
     {
         TraceOn[i].statement = -1; 
+        TraceOn[i].currentLine = -1;
     }
 
 
@@ -52,7 +53,7 @@ int parser() {
     char contents;
     char fileName[] = "a1";
 
-    file = fopen("a2", "r");
+    file = fopen("a8", "r");
 
 
     if (file == NULL) {
@@ -85,12 +86,14 @@ int parser() {
     //if comment ignore until \n
     if(def == COMMENT)
     {
-        printf("comment here skip line\n");
+        //printf("comment here skip line\n");
         while(contents != '\n')
         {
             contents = fgetc(file);
-            linecount++;
+           
         }
+        //if(contents =='\n')
+        // linecount++;
     }
     isBegin(holder) ;
       if(strcmp(holder, "begin") == 0)
@@ -105,7 +108,8 @@ int parser() {
             // 
         if(!hasBegin)
         {
-            printf("error\n");
+            printf("Line: %d error message: No 'begin'.\n",linecount);
+            return ERROR;
         }
         //if(strcmp(holder, "begin") ==0)
             //lastDef = def;
@@ -138,7 +142,15 @@ int parser() {
                 if(statementTable->leftParCounter != statementTable->rightParCounter)
                 {
                     //CALL ERROR TODO
-                    printf("failed2\n");
+                    if(statementTable->leftParCounter > statementTable->rightParCounter)
+                    {
+                        printf("Line: %d. Missing Expecting ')' \n", linecount);
+                    }
+                    else 
+                    {
+                        printf("Line: %d. Missing Expecting '(' \n", linecount);
+                    }
+                    return ERROR;
                 }
 
                 //flush contents and restart 
@@ -157,10 +169,13 @@ int parser() {
             }
             else 
             {
-                printf("Line: %d, syntax error:  %s\n", linecount,holder);
+                if(strcmp(holder, "") != 0)
+                {
 
-                return ERROR;
-                //TODO ERROR
+                    printf("Line: %d, syntax error:  %s\n", linecount,holder);
+                    return ERROR;
+                    //TODO ERROR
+                }
             }
 
 
@@ -347,6 +362,11 @@ int parser() {
          {
             //printf("%s",holder);
             isEnd(holder);
+            if(!hasEnd)
+            {
+                printf("Error message: Missing 'end.'\n");
+                return ERROR;
+            }
              //printf("reached end\n");
              break;
 
@@ -357,7 +377,7 @@ int parser() {
     //          printf("%s", holder);
     
     //printf("%d", linecount);
-     printf("-----------------------------\n");
+    // printf("-----------------------------\n");
 
                 for(int i=0; i < TableSize; i++)
                 {
@@ -365,14 +385,14 @@ int parser() {
                     {
                         
                         
-                       printf("%d\n",  TraceOn[i].statement);
+                       //printf("%d\n",  TraceOn[i].statement);
                        //printf("%d\n",  TraceOn[i].currentLine);
                             //printf("here");
                         
                     }
                 }
 
-                match();
+               if (!match()) return ERROR;
 
 
 
@@ -397,6 +417,18 @@ int parser() {
         }
         else break;
     }*/
+
+    if(hasBegin && hasEnd)
+    {
+        for(int i=1; i < TableSize; i++)
+        {
+            if(strcmp(symbolTable[i].IDs,  "") !=0)
+            {
+                printf("ID #%d: %s\n", i, symbolTable[i].IDs);
+            }
+        }
+        return PASS;
+    }
 }
 
 bool syntaxChecker(char input[]) {
@@ -603,7 +635,7 @@ void prediction(int def)
 
 }
 
-void match()
+bool match()
 {
 
     
@@ -619,7 +651,7 @@ void match()
             {
                 if(lookAhead[j] == TraceOn[i+1].statement)
                 {
-                    printf("match found: %d AND %d \n", TraceOn[i].statement, TraceOn[i+1].statement);
+                   // printf("match found: %d AND %d \n", TraceOn[i].statement, TraceOn[i+1].statement);
                     found = true;
                     break;
                 }
@@ -627,13 +659,44 @@ void match()
             }
             if(TraceOn[i+1].statement != -1)
             {
-                if(!found) printf("error %d %d \n", TraceOn[i+1].statement, TraceOn[i].currentLine);
+                if(!found) 
+                {
+                    int received = TraceOn[i+1].statement;
+                    int beforeStatement = TraceOn[i].statement;
+                    
+                    prediction(beforeStatement);
+
+                    if(received != SEMICOLON)
+                    {
+                        //printf("Line: %d, Missing expected:  '%c', '%c', '%c'\n", , TraceOn[i].currentLine);
+
+                        
+                        char word[50];
+                        strcpy(word, translator(received)); 
+                        printf("Line: %d, contains error received: '%s' ",TraceOn[i].currentLine, word);
+
+                        for(int i=0; i < TableSize; i++)
+                        {
+                            if(lookAhead[i] != -1)
+                            {
+                                printf("Expected  '%s' ", translator(lookAhead[i]));
+                            }
+                        
+                        }
+                       // printf("%d hello\n",lookAhead[0]);
+                        return false;   
+                    }
+                    //else
+                    //printf("Line: %d, contains error received: ';")
+                    //return ERROR;   
+                }
+                
             }
         }
         
     }
 
-    
+    return true;
     //prediction();
 }
 

@@ -1,6 +1,7 @@
 #ifndef LEXICON_H_INCLUDED 
 #define LEXICON_H_INCLUDED
 #include <stdio.h>
+#include <string.h>
 
 #define ID 300
 #define NUM 301
@@ -19,4 +20,5 @@
 
 
 int lexicon(char ch);
+char *translator(int def);
 #endif
