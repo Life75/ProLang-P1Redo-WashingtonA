@@ -1,6 +1,7 @@
 #include "parser.h"
-bool hasEnd =false;
-bool hasBegin=false;
+
+bool hasEnd = false;
+bool hasBegin = false;
 int lookAhead[TableSize];
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
@@ -11,26 +12,23 @@ struct TraceOn TraceOn[TableSize];
 int parser(char fileName[]) {
 
     //init arrays and values 
-    for(int i=0; i < TableSize; i++)
-    {
-        symbolTable->IDs[i] = ""; 
+    for (int i = 0; i < TableSize; i++) {
+        symbolTable -> IDs[i] = "";
     }
 
-    for(int i=0; i < TableSize; i++)
-    {
-        lookAhead[i] = -1; 
+    for (int i = 0; i < TableSize; i++) {
+        lookAhead[i] = -1;
     }
 
-    for(int i=0; i < TableSize; i++)
-    {
-        TraceOn[i].statement = -1; 
+    for (int i = 0; i < TableSize; i++) {
+        TraceOn[i].statement = -1;
         TraceOn[i].currentLine = -1;
     }
 
 
-    statementTable->eqCounter =0;
-    statementTable->leftParCounter =0;
-    statementTable->rightParCounter =0;
+    statementTable -> eqCounter = 0;
+    statementTable -> leftParCounter = 0;
+    statementTable -> rightParCounter = 0;
 
     FILE * file;
     char contents;
@@ -45,189 +43,158 @@ int parser(char fileName[]) {
     int linecount = 1;
     int def = 0;
     char holder[100] = "";
-    int lookAhead =0;
-    memset(holder, 0, strlen(holder)); 
+    int lookAhead = 0;
+    memset(holder, 0, strlen(holder));
 
 
     while (1) {
-    
-    
-       
+
+
+
         contents = fgetc(file);
 
-  
+
         def = lexicon(contents);
-        
-     
 
-    //if comment ignore until \n
-    if(def == COMMENT)
-    {
-        //printf("comment here skip line\n");
-        while(contents != '\n')
-        {
-            contents = fgetc(file);
-           
-        }
-    }
-    isBegin(holder) ;
-      if(strcmp(holder, "begin") == 0)
-            {
-                memset(holder, 0, strlen(holder));
+
+
+        //if comment ignore until \n
+        if (def == COMMENT) {
+            //printf("comment here skip line\n");
+            while (contents != '\n') {
+                contents = fgetc(file);
+
             }
+        }
+        isBegin(holder);
+        if (strcmp(holder, "begin") == 0) {
+            memset(holder, 0, strlen(holder));
+        }
 
-      
 
-        if (def == OP || def == EQ  || def == SEMICOLON || def == END || def == LEFT_PAR|| def == RIGHT_PAR) {
-            
-           
-            if(!hasBegin)
-            {
-                printf("Line: %d error message: No 'begin'.\n",linecount);
+
+        if (def == OP || def == EQ || def == SEMICOLON || def == END || def == LEFT_PAR || def == RIGHT_PAR) {
+
+
+            if (!hasBegin) {
+                printf("Line: %d error message: No 'begin'.\n", linecount);
                 return ERROR;
             }
-      
-            if(def == EQ)
-            {
-                statementTable->eqCounter++;
+
+            if (def == EQ) {
+                statementTable -> eqCounter++;
             }
 
-            if(def == LEFT_PAR)
-            {
-                statementTable->leftParCounter++;
+            if (def == LEFT_PAR) {
+                statementTable -> leftParCounter++;
             }
 
-            if(def == RIGHT_PAR)
-            {
-                statementTable->rightParCounter++;
+            if (def == RIGHT_PAR) {
+                statementTable -> rightParCounter++;
             }
 
             //means statement has ended check the EQ and PAR comparisons for the statement 
-            if(def == SEMICOLON)
-            {
-                if(statementTable->eqCounter > 1)
-                {
+            if (def == SEMICOLON) {
+                if (statementTable -> eqCounter > 1) {
                     //CALL ERROR DEFINE
                     printf("More than '1' '=' in given statement\n");
                     return ERROR;
                 }
 
-                if(statementTable->leftParCounter != statementTable->rightParCounter)
-                {
+                if (statementTable -> leftParCounter != statementTable -> rightParCounter) {
                     //CALL ERROR 
-                    if(statementTable->leftParCounter > statementTable->rightParCounter)
-                    {
+                    if (statementTable -> leftParCounter > statementTable -> rightParCounter) {
                         printf("Line: %d. Missing Expecting ')' \n", linecount);
-                    }
-                    else 
-                    {
+                    } else {
                         printf("Line: %d. Missing Expecting '(' \n", linecount);
                     }
                     return ERROR;
                 }
 
                 //flush contents and restart 
-                statementTable->eqCounter =0;
-                statementTable->leftParCounter =0;
-                statementTable->rightParCounter =0;
+                statementTable -> eqCounter = 0;
+                statementTable -> leftParCounter = 0;
+                statementTable -> rightParCounter = 0;
             }
 
-           
-            if(syntaxChecker(holder))
-            {
+
+            if (syntaxChecker(holder)) {
                 inputInSymbolTable(holder);
-               
-            }
-            else 
-            {
-                if(strcmp(holder, "") != 0)
-                {
-                    printf("hello\n");
-                    printf("Line: %d, syntax error:  %s\n", linecount,holder);
+
+            } else {
+                if (strcmp(holder, "") != 0) {
+                    printf("Line: %d, syntax error:  %s\n", linecount, holder);
                     return ERROR;
                 }
             }
 
-                
-            for(int i=0; i < TableSize; i++)
-            {
-                if(TraceOn[i].statement == -1)
-                {
-                     if(strcmp(holder, "") != "")
-                    {
-                        int checker = IDorNum(holder);
-                        
 
-                        if(checker != ERROR)
-                        {
-                            
+            for (int i = 0; i < TableSize; i++) {
+                if (TraceOn[i].statement == -1) {
+                    if (strcmp(holder, "") != "") {
+                        int checker = IDorNum(holder);
+
+
+                        if (checker != ERROR) {
+
                             TraceOn[i].statement = checker;
                             TraceOn[i].currentLine = linecount;
-                            
+
 
                         }
-                        for(int j =0; j < TableSize; j++)
-                        {
-                            if(TraceOn[j].statement == -1)
-                            {
+                        for (int j = 0; j < TableSize; j++) {
+                            if (TraceOn[j].statement == -1) {
                                 TraceOn[j].statement = def;
                                 TraceOn[j].currentLine = linecount;
                                 break;
                             }
                         }
-                            
-                        
+
+
                     }
-  
+
                     break;
                 }
             }
-            
+
             memset(holder, 0, strlen(holder));
-     
 
 
-        } 
-        else if (def == ID || def == NUM || def == END) {
-            
-                isEnd(holder);
-                    
-        
-            if(contents != 32 && contents != '\n')
-            {
-                strncat(holder, &contents, 1);
+
+        } else if (def == ID || def == NUM || def == END) {
+
+            isEnd(holder);
+
+
+            if (contents != 32 && contents != '\n') {
+                strncat(holder, & contents, 1);
             }
-  
+
         }
 
         if (contents == '\n') {
             linecount++;
         }
 
-         if (contents == EOF)
-         {
+        if (contents == EOF) {
             isEnd(holder);
-            if(!hasEnd)
-            {
+            if (!hasEnd) {
                 printf("Error message: Missing 'end.'\n");
                 return ERROR;
             }
-             break;
+            break;
 
-         }
-            
+        }
+
     }
-         if (!match()) return ERROR;
+    if (!match()) return ERROR;
 
     fclose(file);
 
-    if(hasBegin && hasEnd)
-    {
+    if (hasBegin && hasEnd) {
         printf("Identifier Table:\n");
-        for(int i=1; i < TableSize; i++)
-        {
-            if(strcmp(symbolTable[i].IDs,  "") !=0)
-            {
+        for (int i = 1; i < TableSize; i++) {
+            if (strcmp(symbolTable[i].IDs, "") != 0) {
                 printf("ID #%d: %s\n", i, symbolTable[i].IDs);
             }
         }
@@ -237,46 +204,38 @@ int parser(char fileName[]) {
 
 bool syntaxChecker(char input[]) {
 
-   int length = strlen(input);
+    int length = strlen(input);
 
-   if(isdigit(input[0]))
-   {
-        for(int i=0; i < length; i++)
-        {
-            if(!isdigit(input[i])) return false;
-        }    
+    if (isdigit(input[0])) {
+        for (int i = 0; i < length; i++) {
+            if (!isdigit(input[i])) return false;
+        }
         return true;
-   }
+    }
 
-    if(isalpha(input[0]))
-    {
+    if (isalpha(input[0])) {
         char behind = "";
 
-        for(int i=0; i < length; i++)
-        {
-            if(input[i] == 95)
-            {
-                if(input[i-1] == 95)
-                {
+        for (int i = 0; i < length; i++) {
+            if (input[i] == 95) {
+                if (input[i - 1] == 95) {
                     return false; //2 underscores consecutive
                 }
             }
             //doesnt end with underscore
-            if(i == length -1)
-            {
-                if(input[i] == 95) 
-                {
+            if (i == length - 1) {
+                if (input[i] == 95) {
                     return false;
-                } 
+                }
             }
-            
+
         }
         return true;
     }
     return false;
 
-  
-   return false;
+
+    return false;
 
 }
 
@@ -301,145 +260,119 @@ bool isEnd(char input[]) {
 }
 
 
-bool inputInSymbolTable(char input[])
-{
+bool inputInSymbolTable(char input[]) {
     //check if its in already, if not then input return true, if it is then return false 
     bool copyFound = false;
-    if(isalpha(input[0]))
-    {
-        for(int i=0; i < TableSize; i++)
-        {
-            if(strcmp(input, symbolTable[i].IDs) == 0)
-            {
+    if (isalpha(input[0])) {
+        for (int i = 0; i < TableSize; i++) {
+            if (strcmp(input, symbolTable[i].IDs) == 0) {
                 copyFound = true;
             }
         }
-        if(!copyFound)
-        {
-            for(int i=0; i < TableSize; i++)
-            {
-                if(strcmp("", symbolTable[i].IDs) ==0)
-                {
+        if (!copyFound) {
+            for (int i = 0; i < TableSize; i++) {
+                if (strcmp("", symbolTable[i].IDs) == 0) {
                     strcpy(symbolTable[i].IDs, input);
                     return true;
                 }
             }
-        }
-        else return false;
+        } else return false;
 
     }
 }
 
-void prediction(int def)
-{
+void prediction(int def) {
 
     //flush last lookAhead 
-    for(int i=0; i < TableSize; i++)
-    {
+    for (int i = 0; i < TableSize; i++) {
         lookAhead[i] = -1;
     }
 
-    if(def == ID)
-    {
-     
-        
-            lookAhead[0] = EQ;
-            lookAhead[1] = OP;
-            lookAhead[2] = RIGHT_PAR;
-            lookAhead[3] = SEMICOLON;
-        
+    if (def == ID) {
+
+
+        lookAhead[0] = EQ;
+        lookAhead[1] = OP;
+        lookAhead[2] = RIGHT_PAR;
+        lookAhead[3] = SEMICOLON;
+
     }
 
-    if(def == NUM)
-    {
+    if (def == NUM) {
         lookAhead[0] = OP;
         lookAhead[1] = LEFT_PAR;
         lookAhead[2] = RIGHT_PAR;
         lookAhead[3] = SEMICOLON;
     }
 
-    if(def == OP)
-    {
+    if (def == OP) {
         lookAhead[0] = ID;
         lookAhead[1] = NUM;
         lookAhead[2] = LEFT_PAR;
         lookAhead[3] = SEMICOLON;
     }
 
-    if(def == EQ)
-    {
+    if (def == EQ) {
         lookAhead[0] = ID;
         lookAhead[1] = NUM;
         lookAhead[2] = LEFT_PAR;
     }
 
-    if(def == LEFT_PAR)
-    {
+    if (def == LEFT_PAR) {
         lookAhead[0] = ID;
         lookAhead[1] = NUM;
         lookAhead[2] = LEFT_PAR;
     }
 
-    if(def == RIGHT_PAR)
-    {
+    if (def == RIGHT_PAR) {
         lookAhead[0] = OP;
         lookAhead[1] = SEMICOLON;
         lookAhead[2] = RIGHT_PAR;
     }
 
-    if(def == SEMICOLON)
-    {
+    if (def == SEMICOLON) {
         lookAhead[0] = ID;
     }
 
 }
 
-bool match()
-{
-    for(int i=0; i < TableSize; i++)
-    {
+bool match() {
+    for (int i = 0; i < TableSize; i++) {
         bool found = false;
-        if(TraceOn[i].statement != -1)
-        {
+        if (TraceOn[i].statement != -1) {
             prediction(TraceOn[i].statement);
 
-            int j=0;
-            while(lookAhead[j] != -1)
-            {
-                if(lookAhead[j] == TraceOn[i+1].statement)
-                {
+            int j = 0;
+            while (lookAhead[j] != -1) {
+                if (lookAhead[j] == TraceOn[i + 1].statement) {
                     found = true;
                     break;
                 }
                 j++;
             }
-            if(TraceOn[i+1].statement != -1)
-            {
-                if(!found) 
-                {
-                    int received = TraceOn[i+1].statement;
+            if (TraceOn[i + 1].statement != -1) {
+                if (!found) {
+                    int received = TraceOn[i + 1].statement;
                     int beforeStatement = TraceOn[i].statement;
-                    
+
                     prediction(beforeStatement);
 
-                    if(received != SEMICOLON)
-                    {
+                    if (received != SEMICOLON) {
                         char word[50];
-                        strcpy(word, translator(received)); 
-                        printf("Line: %d, contains error received: '%s' ",TraceOn[i].currentLine, word);
+                        strcpy(word, translator(received));
+                        printf("Line: %d, contains error Received: '%s' ", TraceOn[i].currentLine, word);
 
-                        for(int i=0; i < TableSize; i++)
-                        {
-                            if(lookAhead[i] != -1)
-                            {
-                                printf("Expected  '%s' ", translator(lookAhead[i]));
+                        for (int i = 0; i < TableSize; i++) {
+                            if (lookAhead[i] != -1) {
+                                printf("Expected:  '%s' ", translator(lookAhead[i]));
                             }
-                        
+
                         }
-                        return false;   
+                        printf("\n");
+                        return false;
                     }
                 }
-                
+
             }
         }
     }
@@ -447,14 +380,10 @@ bool match()
 }
 
 
-int IDorNum(char input[])
-{
-     if(isdigit(input[0]))
-   {
-       return NUM;
-   }
-   else if(isalpha(input[0])) 
-    {
+int IDorNum(char input[]) {
+    if (isdigit(input[0])) {
+        return NUM;
+    } else if (isalpha(input[0])) {
         return ID;
     }
     return ERROR;
