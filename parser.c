@@ -188,13 +188,13 @@ void parser() {
                         if(checker != ERROR)
                         {
                             
-                            printf("%d\n", checker);
+                          //  printf("%d\n", checker);
                             TraceOn[i].statement = checker;
                             TraceOn[i].currentLine = linecount;
                             
 
                         }
-                        printf("%d inside\n", def);
+                       // printf("%d inside\n", def);
                         for(int j =0; j < TableSize; j++)
                         {
                             if(TraceOn[j].statement == -1)
@@ -350,11 +350,13 @@ void parser() {
                         
                         
                        printf("%d\n",  TraceOn[i].statement);
-                       printf("%d\n",  TraceOn[i].currentLine);
+                       //printf("%d\n",  TraceOn[i].currentLine);
                             //printf("here");
                         
                     }
                 }
+
+                match();
 
 
 
@@ -548,8 +550,9 @@ void prediction(int def)
     if(def == OP)
     {
         lookAhead[0] = ID;
-        lookAhead[1] = LEFT_PAR;
-        lookAhead[2] = SEMICOLON;
+        lookAhead[1] = NUM;
+        lookAhead[2] = LEFT_PAR;
+        lookAhead[3] = SEMICOLON;
     }
 
     if(def == EQ)
@@ -571,31 +574,49 @@ void prediction(int def)
         lookAhead[1] = SEMICOLON;
     }
 
-    printf("Choice1: %d\n", lookAhead[0]);
-    printf("Choice2: %d\n", lookAhead[1]);
-    printf("Choice3: %d\n", lookAhead[2]);
+    if(def == SEMICOLON)
+    {
+        lookAhead[0] = ID;
+    }
+
+   // printf("Choice1: %d\n", lookAhead[0]);
+   // printf("Choice2: %d\n", lookAhead[1]);
+   // printf("Choice3: %d\n", lookAhead[2]);
 
 }
 
 void match()
 {
-    prediction(backTrace->firstState);
 
+    
     for(int i=0; i < TableSize; i++)
     {
-        if(lookAhead[i] == backTrace->secondState)
+        bool found = false;
+        if(TraceOn[i].statement != -1)
         {
-           // printf("match found");
-            break;
+            prediction(TraceOn[i].statement);
+
+            int j=0;
+            while(lookAhead[j] != -1)
+            {
+                if(lookAhead[j] == TraceOn[i+1].statement)
+                {
+                    printf("match found: %d AND %d \n", TraceOn[i].statement, TraceOn[i+1].statement);
+                    found = true;
+                    break;
+                }
+                j++;
+            }
+            if(TraceOn[i+1].statement != -1)
+            {
+                if(!found) printf("error %d %d \n", TraceOn[i+1].statement, TraceOn[i].currentLine);
+            }
         }
-       // else printf("no match ");
+        
     }
 
     
-    //backTrace->secondState =0;
-
-
-    //return ERROR;
+    //prediction();
 }
 
 
