@@ -2,86 +2,63 @@
 bool hasEnd =false;
 bool hasBegin=false;
 int lookAhead[TableSize];
-int eachParsedStatement[TableSize];
-
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
-struct BackTrace backTrace[TableSize]; 
-struct BackTrace railRoad[TableSize];
 struct TraceOn TraceOn[TableSize];
 
 
 
-int parser() {
+int parser(char fileName[]) {
 
-    
-    for(int i=0; i < 100; i++)
+    //init arrays and values 
+    for(int i=0; i < TableSize; i++)
     {
         symbolTable->IDs[i] = ""; 
     }
 
-    for(int i=0; i < 100; i++)
+    for(int i=0; i < TableSize; i++)
     {
         lookAhead[i] = -1; 
     }
 
-    for(int i=0; i < 100; i++)
-    {
-        railRoad[i].secondState = -1; 
-    }
-
-    for(int i=0; i < 100; i++)
+    for(int i=0; i < TableSize; i++)
     {
         TraceOn[i].statement = -1; 
         TraceOn[i].currentLine = -1;
     }
 
 
-
-
-
     statementTable->eqCounter =0;
     statementTable->leftParCounter =0;
     statementTable->rightParCounter =0;
 
-
-    backTrace->firstState =0;
-    backTrace->firstState =0;
-    backTrace->currentLine =0;
-
     FILE * file;
     char contents;
-    char fileName[] = "a1";
-
-    file = fopen("a8", "r");
+    file = fopen(fileName, "r");
 
 
     if (file == NULL) {
-        printf("opening file error");
+        printf("opening file error: %s", fileName);
+        return ERROR;
     }
-    // else printf("file opened\n");
 
     int linecount = 1;
     int def = 0;
     char holder[100] = "";
     int lookAhead =0;
-    int lastDef =0;
-    int deny =0;
-    bool IDhit = false;
-    memset(holder, 0, strlen(holder));
+    memset(holder, 0, strlen(holder)); 
+
+
     while (1) {
     
     
-        //printf("%d\n", lastDef);
-        contents = fgetc(file);
        
+        contents = fgetc(file);
 
-    //if()
+  
         def = lexicon(contents);
         
-      
-        //isEnd(holder);
-       // printf("%c\n", contents);
+     
 
     //if comment ignore until \n
     if(def == COMMENT)
@@ -92,8 +69,6 @@ int parser() {
             contents = fgetc(file);
            
         }
-        //if(contents =='\n')
-        // linecount++;
     }
     isBegin(holder) ;
       if(strcmp(holder, "begin") == 0)
@@ -104,16 +79,14 @@ int parser() {
       
 
         if (def == OP || def == EQ  || def == SEMICOLON || def == END || def == LEFT_PAR|| def == RIGHT_PAR) {
-            //printf("hi\n");
-            // 
-        if(!hasBegin)
-        {
-            printf("Line: %d error message: No 'begin'.\n",linecount);
-            return ERROR;
-        }
-        //if(strcmp(holder, "begin") ==0)
-            //lastDef = def;
-
+            
+           
+            if(!hasBegin)
+            {
+                printf("Line: %d error message: No 'begin'.\n",linecount);
+                return ERROR;
+            }
+      
             if(def == EQ)
             {
                 statementTable->eqCounter++;
@@ -132,16 +105,16 @@ int parser() {
             //means statement has ended check the EQ and PAR comparisons for the statement 
             if(def == SEMICOLON)
             {
-                //printf("ehy\n");
                 if(statementTable->eqCounter > 1)
                 {
-                    //CALL ERROR DEFINE LINE TOOD
-                    printf("failed1\n");
+                    //CALL ERROR DEFINE
+                    printf("More than '1' '=' in given statement\n");
+                    return ERROR;
                 }
 
                 if(statementTable->leftParCounter != statementTable->rightParCounter)
                 {
-                    //CALL ERROR TODO
+                    //CALL ERROR 
                     if(statementTable->leftParCounter > statementTable->rightParCounter)
                     {
                         printf("Line: %d. Missing Expecting ')' \n", linecount);
@@ -160,8 +133,6 @@ int parser() {
             }
 
            
-
-            //printf("|%s|\n",holder);
             if(syntaxChecker(holder))
             {
                 inputInSymbolTable(holder);
@@ -171,41 +142,12 @@ int parser() {
             {
                 if(strcmp(holder, "") != 0)
                 {
-
+                    printf("hello\n");
                     printf("Line: %d, syntax error:  %s\n", linecount,holder);
                     return ERROR;
-                    //TODO ERROR
                 }
             }
 
-
-           
-/*
-             for(int i=0; i < TableSize; i++)
-             {
-                 if(railRoad[i].secondState == -1)
-                 {
-                     railRoad[i].firstState = checker;
-                     railRoad[i].secondState = def;
-                     railRoad[i].currentLine = linecount;
-                     break;
-                 }
-                 else
-                 {
-                    railRoad[i].firstState = railRoad[i-1].secondState;
-                    if(strcmp(holder, "") ==0)
-                    {
-                        railRoad[i].secondState = def;
-                    }
-                    else railRoad[i].secondState = checker;
-
-                    break;
-
-                 }
-             
-             }
-
-               */
                 
             for(int i=0; i < TableSize; i++)
             {
@@ -219,13 +161,11 @@ int parser() {
                         if(checker != ERROR)
                         {
                             
-                          //  printf("%d\n", checker);
                             TraceOn[i].statement = checker;
                             TraceOn[i].currentLine = linecount;
                             
 
                         }
-                       // printf("%d inside\n", def);
                         for(int j =0; j < TableSize; j++)
                         {
                             if(TraceOn[j].statement == -1)
@@ -237,122 +177,28 @@ int parser() {
                         }
                             
                         
-                        
                     }
-                    //printf("%d\n", def);
-                    //TraceOn[i].statement = def;    
-                    
-
-                    //TraceOn[i].statement = def;
+  
                     break;
                 }
             }
-               
-                
-               // 
-                
-                /*
-                    if(backTrace->secondState == 0)
-                    {
-                        backTrace->firstState =checker;
-                        backTrace->secondState = def;
-                        backTrace->currentLine = linecount;
-                        printf("%d\n", backTrace->firstState);
-                        printf("%d\n", backTrace->secondState);
-                        printf("%s\n", holder);
-
-                        match();
-                    }
-                    else 
-                    {
-                        backTrace->firstState = backTrace->secondState;
-                        
-                        if(strcmp(holder, "") ==0)
-                        {
-                            backTrace->secondState = def;
-                        }
-                        else backTrace->secondState = checker;
-                        printf("%d\n", backTrace->firstState);
-                        printf("%d\n", backTrace->secondState);
-                        printf("%s\n", holder);
-
-                        match();
-                    }
-*/
-                   /* if(IDhit)
-                    {
-                        printf("hit ID");
-                    }
-                    else printf("hit OP");
-                    */
-                   
-            //  //  */
-
-
-            //predict 
-
-
-          /*  if(eachParsedStatement[0] != -1)
-            {
-                for(int i=0; i < TableSize; i++)
-                {
-                    prediction(eachParsedStatement[i])
-                }
-            }*/
-            
-
-            //placeInParsedArray(def);
-
-
-
-        if(hasBegin)
-        {
-            /*if(match(def) == ERROR) 
-            {
-                //printf("%c", contents);
-                printf("%s\n", expecting );
-                
-            }*/
-            if(def != SEMICOLON)
-            {
-                //printf("%d\n", lastDef);
-                //prediction(def);
-                
-             
-
-            }
-        }
-
-            //placing inside symbolTable
-
             
             memset(holder, 0, strlen(holder));
-            IDhit = false;
+     
 
 
         } 
         else if (def == ID || def == NUM || def == END) {
-            //printf("%s\n", holder);
-            isEnd(holder);
-            //lastDef = def;
+            
+                isEnd(holder);
                     
         
             if(contents != 32 && contents != '\n')
             {
                 strncat(holder, &contents, 1);
             }
-            IDhit = true;
+  
         }
-
-        if(def == END)
-        {
-            //printf("getting to end");
-        }
-
-
-
-        lastDef = def;
-
 
         if (contents == '\n') {
             linecount++;
@@ -360,63 +206,20 @@ int parser() {
 
          if (contents == EOF)
          {
-            //printf("%s",holder);
             isEnd(holder);
             if(!hasEnd)
             {
                 printf("Error message: Missing 'end.'\n");
                 return ERROR;
             }
-             //printf("reached end\n");
              break;
 
          }
             
-        //printf("%d", def);
     }
-    //          printf("%s", holder);
-    
-    //printf("%d", linecount);
-    // printf("-----------------------------\n");
+         if (!match()) return ERROR;
 
-                for(int i=0; i < TableSize; i++)
-                {
-                    if(TraceOn[i].statement != -1)
-                    {
-                        
-                        
-                       //printf("%d\n",  TraceOn[i].statement);
-                       //printf("%d\n",  TraceOn[i].currentLine);
-                            //printf("here");
-                        
-                    }
-                }
-
-               if (!match()) return ERROR;
-
-
-
-    /*  while(fgets (contents, 50, file) != NULL)
-      {
-         // printf("%s", contents);
-      }
-      */
-
-                       
-
-     
     fclose(file);
-
-/*
-    for(int i=0; i< TableSize; i++)
-    {
-        if(railRoad[i].secondState != -1)
-        {
-            printf("%d\n", railRoad[i].firstState);
-            printf("%d\n", railRoad[i].secondState);            
-        }
-        else break;
-    }*/
 
     if(hasBegin && hasEnd)
     {
@@ -435,7 +238,7 @@ int parser() {
 bool syntaxChecker(char input[]) {
 
    int length = strlen(input);
-//if num
+
    if(isdigit(input[0]))
    {
         for(int i=0; i < length; i++)
@@ -448,24 +251,21 @@ bool syntaxChecker(char input[]) {
     if(isalpha(input[0]))
     {
         char behind = "";
-        //check for consective underscores
+
         for(int i=0; i < length; i++)
         {
             if(input[i] == 95)
             {
-                //printf("underscore found");
                 if(input[i-1] == 95)
                 {
-                    //printf("%s","incorrect");
                     return false; //2 underscores consecutive
                 }
             }
-    //make doesnt end with underscore
+            //doesnt end with underscore
             if(i == length -1)
             {
                 if(input[i] == 95) 
                 {
-                   // printf("%s","works1");
                     return false;
                 } 
             }
@@ -476,7 +276,6 @@ bool syntaxChecker(char input[]) {
     return false;
 
   
-   
    return false;
 
 }
@@ -485,52 +284,19 @@ bool isBegin(char input[]) {
     char begin[] = "begin";
 
     if (strcmp(input, begin) == 0) {
-        //printf("works");
         hasBegin = true;
         return true;
     }
-    /*
-        for(int i=0; i < 5; i++)
-        {
-            if(input[i] == begin[i])
-            {
-                if(i == 4)
-                {
-                    //printf("%s", input);
-                    return true;
-                }
-            }
-            else 
-            {
-                break;
-            } 
-            return false;
-
-        }*/
     return false;
 }
 
 bool isEnd(char input[]) {
     char end[] = "end.";
-    //printf("%s\n",input);
+
     if (strcmp(input, end) == 0) {
-        //printf("works");
         hasEnd = true;
         return true;
     }
-/*
-    for (int i = 0; i < 4; i++) {
-        if (input[i] == end[i]) {
-           
-            if (i == 3) {
-                
-                return true;
-            }
-        } else {
-            break;
-        }
-    }
-*/
     return false;
 }
 
@@ -545,7 +311,6 @@ bool inputInSymbolTable(char input[])
         {
             if(strcmp(input, symbolTable[i].IDs) == 0)
             {
-                //printf("copy\n");
                 copyFound = true;
             }
         }
@@ -556,7 +321,6 @@ bool inputInSymbolTable(char input[])
                 if(strcmp("", symbolTable[i].IDs) ==0)
                 {
                     strcpy(symbolTable[i].IDs, input);
-                    //printf("placed\n");
                     return true;
                 }
             }
@@ -581,10 +345,8 @@ void prediction(int def)
         
             lookAhead[0] = EQ;
             lookAhead[1] = OP;
-            
             lookAhead[2] = RIGHT_PAR;
             lookAhead[3] = SEMICOLON;
-           // printf("1\n");
         
     }
 
@@ -630,16 +392,10 @@ void prediction(int def)
         lookAhead[0] = ID;
     }
 
-   // printf("Choice1: %d\n", lookAhead[0]);
-   // printf("Choice2: %d\n", lookAhead[1]);
-   // printf("Choice3: %d\n", lookAhead[2]);
-
 }
 
 bool match()
 {
-
-    
     for(int i=0; i < TableSize; i++)
     {
         bool found = false;
@@ -652,7 +408,6 @@ bool match()
             {
                 if(lookAhead[j] == TraceOn[i+1].statement)
                 {
-                   // printf("match found: %d AND %d \n", TraceOn[i].statement, TraceOn[i+1].statement);
                     found = true;
                     break;
                 }
@@ -669,9 +424,6 @@ bool match()
 
                     if(received != SEMICOLON)
                     {
-                        //printf("Line: %d, Missing expected:  '%c', '%c', '%c'\n", , TraceOn[i].currentLine);
-
-                        
                         char word[50];
                         strcpy(word, translator(received)); 
                         printf("Line: %d, contains error received: '%s' ",TraceOn[i].currentLine, word);
@@ -684,21 +436,14 @@ bool match()
                             }
                         
                         }
-                       // printf("%d hello\n",lookAhead[0]);
                         return false;   
                     }
-                    //else
-                    //printf("Line: %d, contains error received: ';")
-                    //return ERROR;   
                 }
                 
             }
         }
-        
     }
-
     return true;
-    //prediction();
 }
 
 

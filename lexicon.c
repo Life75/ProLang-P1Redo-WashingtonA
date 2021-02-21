@@ -1,10 +1,10 @@
 #include "lexicon.h"
 
+//ASCII Values for given types 
 int lexicon(char ch)
 {
     if(ch == 32 || ch == '\t')
     {
-        //printf("tab space \n");
         return SPACE;
     }  
     else if(ch == 59)
@@ -15,7 +15,7 @@ int lexicon(char ch)
     {
         return COMMENT;
     }
-    else if(ch == 61 ) //=
+    else if(ch == 61 ) 
     {
         return EQ;
     }
@@ -29,7 +29,6 @@ int lexicon(char ch)
     }
     else if(ch == 42 || ch == 43 || ch == 45 || ch == 47 || ch == 37)
     {
-         //printf("working\n");
         return OP;
     }
     else if(isdigit(ch))
@@ -37,13 +36,11 @@ int lexicon(char ch)
         return NUM;
     }
     else if(!isdigit(ch))
-    {
-       
+    {      
         return ID;
     }
     else if(ch == 46)
     {
-        //printf("end");
         return END;
     }
     else if (ch == EOF)
@@ -51,7 +48,6 @@ int lexicon(char ch)
         return DONE;
     }
     else return ch;
-   // return;
 }
 
 
@@ -63,7 +59,6 @@ char *translator(int def)
     if(def == ID)
     {
         strcpy(word, "Identifier");
-        
     }
 
     if(def == NUM)
@@ -74,8 +69,7 @@ char *translator(int def)
 
     if(def == EQ) 
     {
-        strcpy(word, "=");
-        
+        strcpy(word, "="); 
     }
 
     if(def == OP)
@@ -100,5 +94,4 @@ char *translator(int def)
    
 
     return word;
-
 }
