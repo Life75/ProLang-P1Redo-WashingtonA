@@ -7,6 +7,8 @@ int eachParsedStatement[TableSize];
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
 struct BackTrace backTrace[TableSize]; 
+struct BackTrace railRoad[TableSize];
+struct TraceOn TraceOn[TableSize];
 
 
 
@@ -25,8 +27,16 @@ void parser() {
 
     for(int i=0; i < 100; i++)
     {
-        eachParsedStatement[i] = -1; 
+        railRoad[i].secondState = -1; 
     }
+
+    for(int i=0; i < 100; i++)
+    {
+        TraceOn[i].statement = -1; 
+    }
+
+
+
 
 
     statementTable->eqCounter =0;
@@ -51,11 +61,12 @@ void parser() {
     // else printf("file opened\n");
 
     int linecount = 1;
-    int def = 1;
+    int def = 0;
     char holder[100] = "";
     int lookAhead =0;
     int lastDef =0;
     int deny =0;
+    bool IDhit = false;
     memset(holder, 0, strlen(holder));
     while (1) {
     
@@ -78,15 +89,15 @@ void parser() {
                 memset(holder, 0, strlen(holder));
             }
 
+      
+
         if (def == OP || def == EQ  || def == SEMICOLON || def == END || def == LEFT_PAR|| def == RIGHT_PAR) {
             //printf("hi\n");
             // 
 
         //if(strcmp(holder, "begin") ==0)
-        
-           if(def == OP)
-            deny++;
             //lastDef = def;
+
             if(def == EQ)
             {
                 statementTable->eqCounter++;
@@ -123,10 +134,7 @@ void parser() {
                 statementTable->rightParCounter =0;
             }
 
-            if(deny == 2)
-            {
-                printf("failed\n");
-            }
+           
 
             //printf("|%s|\n",holder);
             if(syntaxChecker(holder))
@@ -139,23 +147,115 @@ void parser() {
                 //TODO ERROR
             }
 
-             int checker = IDorNum(holder);
+
+           
+/*
+             for(int i=0; i < TableSize; i++)
+             {
+                 if(railRoad[i].secondState == -1)
+                 {
+                     railRoad[i].firstState = checker;
+                     railRoad[i].secondState = def;
+                     railRoad[i].currentLine = linecount;
+                     break;
+                 }
+                 else
+                 {
+                    railRoad[i].firstState = railRoad[i-1].secondState;
+                    if(strcmp(holder, "") ==0)
+                    {
+                        railRoad[i].secondState = def;
+                    }
+                    else railRoad[i].secondState = checker;
+
+                    break;
+
+                 }
+             
+             }
+
+               */
                 
+            for(int i=0; i < TableSize; i++)
+            {
+                if(TraceOn[i].statement == -1)
+                {
+                     if(strcmp(holder, "") != "")
+                    {
+                        int checker = IDorNum(holder);
+                        
+
+                        if(checker != ERROR)
+                        {
+                            
+                            printf("%d\n", checker);
+                            TraceOn[i].statement = checker;
+                            TraceOn[i].currentLine = linecount;
+                            
+
+                        }
+                        printf("%d inside\n", def);
+                        for(int j =0; j < TableSize; j++)
+                        {
+                            if(TraceOn[j].statement == -1)
+                            {
+                                TraceOn[j].statement = def;
+                                TraceOn[j].currentLine = linecount;
+                                break;
+                            }
+                        }
+                            
+                        
+                        
+                    }
+                    //printf("%d\n", def);
+                    //TraceOn[i].statement = def;    
+                    
+
+                    //TraceOn[i].statement = def;
+                    break;
+                }
+            }
+               
                 
-                    if(backTrace->firstState == 0)
+               // 
+                
+                /*
+                    if(backTrace->secondState == 0)
                     {
                         backTrace->firstState =checker;
                         backTrace->secondState = def;
                         backTrace->currentLine = linecount;
-                        printf("%d, %s\n", backTrace->firstState, holder);
+                        printf("%d\n", backTrace->firstState);
                         printf("%d\n", backTrace->secondState);
-                        
+                        printf("%s\n", holder);
+
                         match();
                     }
-                    
-                   
-                
+                    else 
+                    {
+                        backTrace->firstState = backTrace->secondState;
+                        
+                        if(strcmp(holder, "") ==0)
+                        {
+                            backTrace->secondState = def;
+                        }
+                        else backTrace->secondState = checker;
+                        printf("%d\n", backTrace->firstState);
+                        printf("%d\n", backTrace->secondState);
+                        printf("%s\n", holder);
 
+                        match();
+                    }
+*/
+                   /* if(IDhit)
+                    {
+                        printf("hit ID");
+                    }
+                    else printf("hit OP");
+                    */
+                   
+            //  //  */
 
 
             //predict 
@@ -196,6 +296,8 @@ void parser() {
 
             
             memset(holder, 0, strlen(holder));
+            IDhit = false;
+
 
         } 
         else if (def == ID || def == NUM || def == END) {
@@ -203,12 +305,12 @@ void parser() {
             isEnd(holder);
             //lastDef = def;
                     
-            deny--;
+        
             if(contents != 32 && contents != '\n')
             {
                 strncat(holder, &contents, 1);
             }
-
+            IDhit = true;
         }
 
         if(def == END)
@@ -239,7 +341,20 @@ void parser() {
     //          printf("%s", holder);
     
     //printf("%d", linecount);
+     printf("-----------------------------\n");
 
+                for(int i=0; i < TableSize; i++)
+                {
+                    if(TraceOn[i].statement != -1)
+                    {
+                        
+                        
+                       printf("%d\n",  TraceOn[i].statement);
+                       printf("%d\n",  TraceOn[i].currentLine);
+                            //printf("here");
+                        
+                    }
+                }
 
 
 
@@ -249,9 +364,21 @@ void parser() {
       }
       */
 
+                       
 
      
     fclose(file);
+
+/*
+    for(int i=0; i< TableSize; i++)
+    {
+        if(railRoad[i].secondState != -1)
+        {
+            printf("%d\n", railRoad[i].firstState);
+            printf("%d\n", railRoad[i].secondState);            
+        }
+        else break;
+    }*/
 }
 
 bool syntaxChecker(char input[]) {
@@ -464,8 +591,8 @@ void match()
        // else printf("no match ");
     }
 
-    backTrace->firstState =0;
-    backTrace->secondState =0;
+    
+    //backTrace->secondState =0;
 
 
     //return ERROR;
@@ -478,9 +605,10 @@ int IDorNum(char input[])
    {
        return NUM;
    }
-    else 
+   else if(isalpha(input[0])) 
     {
         return ID;
     }
+    return ERROR;
 
 }

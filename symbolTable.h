@@ -24,4 +24,11 @@ struct BackTrace
     int secondState;
     int currentLine;
 };
+
+
+struct TraceOn
+{
+    int statement;
+    int currentLine;
+};
 #endif
