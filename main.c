@@ -8,7 +8,8 @@
 int main(int argc, char *argv[])
 {
     //char fileName 
-    parser(); //Take in script for file name     
+    int num;
+    num = parser(); //Take in script for file name     
 
 
 

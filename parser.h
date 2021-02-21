@@ -17,7 +17,7 @@
 #define TableSize 100
 
 
-void parser();
+int parser();
 bool syntaxChecker(char input[]);
 bool isBegin(char input[]);
 bool isEnd(char input[]);

@@ -1,5 +1,5 @@
 begin
-  a_ = b+2;
+  a_ = b;
   a = b+2;
 end.
 

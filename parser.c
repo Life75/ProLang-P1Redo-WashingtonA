@@ -12,7 +12,7 @@ struct TraceOn TraceOn[TableSize];
 
 
 
-void parser() {
+int parser() {
 
     
     for(int i=0; i < 100; i++)
@@ -52,7 +52,7 @@ void parser() {
     char contents;
     char fileName[] = "a1";
 
-    file = fopen("a1", "r");
+    file = fopen("a2", "r");
 
 
     if (file == NULL) {
@@ -75,7 +75,7 @@ void parser() {
         contents = fgetc(file);
        
 
-
+    //if()
         def = lexicon(contents);
         
       
@@ -83,7 +83,16 @@ void parser() {
        // printf("%c\n", contents);
 
     //if comment ignore until \n
-     isBegin(holder) ;
+    if(def == COMMENT)
+    {
+        printf("comment here skip line\n");
+        while(contents != '\n')
+        {
+            contents = fgetc(file);
+            linecount++;
+        }
+    }
+    isBegin(holder) ;
       if(strcmp(holder, "begin") == 0)
             {
                 memset(holder, 0, strlen(holder));
@@ -94,7 +103,10 @@ void parser() {
         if (def == OP || def == EQ  || def == SEMICOLON || def == END || def == LEFT_PAR|| def == RIGHT_PAR) {
             //printf("hi\n");
             // 
-
+        if(!hasBegin)
+        {
+            printf("error\n");
+        }
         //if(strcmp(holder, "begin") ==0)
             //lastDef = def;
 
@@ -116,16 +128,17 @@ void parser() {
             //means statement has ended check the EQ and PAR comparisons for the statement 
             if(def == SEMICOLON)
             {
+                //printf("ehy\n");
                 if(statementTable->eqCounter > 1)
                 {
                     //CALL ERROR DEFINE LINE TOOD
-                    printf("failed\n");
+                    printf("failed1\n");
                 }
 
                 if(statementTable->leftParCounter != statementTable->rightParCounter)
                 {
                     //CALL ERROR TODO
-                    printf("failed\n");
+                    printf("failed2\n");
                 }
 
                 //flush contents and restart 
@@ -144,6 +157,9 @@ void parser() {
             }
             else 
             {
+                printf("Line: %d, syntax error:  %s\n", linecount,holder);
+
+                return ERROR;
                 //TODO ERROR
             }
 
@@ -532,9 +548,9 @@ void prediction(int def)
         
             lookAhead[0] = EQ;
             lookAhead[1] = OP;
-            lookAhead[2] = LEFT_PAR;
-            lookAhead[3] = RIGHT_PAR;
-            lookAhead[4] = SEMICOLON;
+            
+            lookAhead[2] = RIGHT_PAR;
+            lookAhead[3] = SEMICOLON;
            // printf("1\n");
         
     }
@@ -566,12 +582,14 @@ void prediction(int def)
     {
         lookAhead[0] = ID;
         lookAhead[1] = NUM;
+        lookAhead[2] = LEFT_PAR;
     }
 
     if(def == RIGHT_PAR)
     {
         lookAhead[0] = OP;
         lookAhead[1] = SEMICOLON;
+        lookAhead[2] = RIGHT_PAR;
     }
 
     if(def == SEMICOLON)

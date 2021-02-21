@@ -11,6 +11,10 @@ int lexicon(char ch)
     {
         return SEMICOLON;
     } 
+    else if(ch == 126)
+    {
+        return COMMENT;
+    }
     else if(ch == 61 ) //=
     {
         return EQ;
