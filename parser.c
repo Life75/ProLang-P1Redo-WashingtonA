@@ -420,6 +420,7 @@ int parser() {
 
     if(hasBegin && hasEnd)
     {
+        printf("Identifier Table:\n");
         for(int i=1; i < TableSize; i++)
         {
             if(strcmp(symbolTable[i].IDs,  "") !=0)
