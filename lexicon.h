@@ -12,6 +12,7 @@
 #define LEFT_PAR 307
 #define RIGHT_PAR 308
 #define COMMENT 309
+#define COMMA 310
 #define BEGIN 400
 #define END 401
 #define DONE 402

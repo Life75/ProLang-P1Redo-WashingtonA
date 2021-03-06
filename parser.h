@@ -21,9 +21,11 @@ bool inputInSymbolTable(char input[]);
 void prediction(int def);
 bool match();
 int IDorNum(char input[]);
+bool checkIfIntTag(char input[]);
 
 extern bool hasEnd;
 extern bool hasBegin;
+
 
 #endif
 

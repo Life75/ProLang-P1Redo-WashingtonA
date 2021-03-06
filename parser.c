@@ -2,6 +2,7 @@
 
 bool hasEnd = false;
 bool hasBegin = false;
+bool intTag = false;
 int lookAhead[TableSize];
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
@@ -13,7 +14,8 @@ int parser(char fileName[]) {
 
     //init arrays and values 
     for (int i = 0; i < TableSize; i++) {
-        symbolTable -> IDs[i] = "";
+        symbolTable->IDs[i] = "";
+        symbolTable->intFlag = false;
     }
 
     for (int i = 0; i < TableSize; i++) {
@@ -26,9 +28,9 @@ int parser(char fileName[]) {
     }
 
 
-    statementTable -> eqCounter = 0;
-    statementTable -> leftParCounter = 0;
-    statementTable -> rightParCounter = 0;
+    statementTable->eqCounter = 0;
+    statementTable->leftParCounter = 0;
+    statementTable->rightParCounter = 0;
 
     FILE * file;
     char contents;
@@ -73,13 +75,31 @@ int parser(char fileName[]) {
 
 
 
-        if (def == OP || def == EQ || def == SEMICOLON || def == END || def == LEFT_PAR || def == RIGHT_PAR) {
+        if (def == OP || def == EQ || def == SEMICOLON || def == END || def == LEFT_PAR || def == RIGHT_PAR || def == COMMA) {
 
-
+        	//printf("%d\n", intTag);
             if (!hasBegin) {
                 printf("Line: %d error message: No 'begin'.\n", linecount);
                 return ERROR;
             }
+
+
+          
+            //else 
+
+            if (syntaxChecker(holder)) {
+            	if(!checkIfIntTag(holder))
+            	{
+           	    	inputInSymbolTable(holder);
+            	} 
+            } else {
+                if (strcmp(holder, "") != 0) {
+                    printf("Line: %d, syntax error:  %s\n", linecount, holder);
+                    return ERROR;
+                }
+            }
+
+
 
             if (def == EQ) {
                 statementTable -> eqCounter++;
@@ -95,6 +115,7 @@ int parser(char fileName[]) {
 
             //means statement has ended check the EQ and PAR comparisons for the statement 
             if (def == SEMICOLON) {
+            	intTag = false; //reset tag
                 if (statementTable -> eqCounter > 1) {
                     //CALL ERROR DEFINE
                     printf("More than '1' '=' in given statement\n");
@@ -110,23 +131,15 @@ int parser(char fileName[]) {
                     }
                     return ERROR;
                 }
-
+                //Add commas to be valid for being next to <ID> Check if the holder is == to int, if so initalize a bool value true until it gets to the end and every ID recorded is flag with an INT flag 
                 //flush contents and restart 
                 statementTable -> eqCounter = 0;
                 statementTable -> leftParCounter = 0;
                 statementTable -> rightParCounter = 0;
             }
-
-
-            if (syntaxChecker(holder)) {
-                inputInSymbolTable(holder);
-
-            } else {
-                if (strcmp(holder, "") != 0) {
-                    printf("Line: %d, syntax error:  %s\n", linecount, holder);
-                    return ERROR;
-                }
-            }
+               
+            
+            
 
 
             for (int i = 0; i < TableSize; i++) {
@@ -156,7 +169,6 @@ int parser(char fileName[]) {
                     break;
                 }
             }
-
             memset(holder, 0, strlen(holder));
 
 
@@ -164,12 +176,23 @@ int parser(char fileName[]) {
         } else if (def == ID || def == NUM || def == END) {
 
             isEnd(holder);
+            
+            
 
 
             if (contents != 32 && contents != '\n') {
                 strncat(holder, & contents, 1);
             }
 
+        }
+        else if (def == SPACE)
+        {
+        	if(checkIfIntTag(holder))
+            {
+            	intTag = true;
+            	printf("heyo %s \n",holder);
+            	memset(holder, 0, strlen(holder));
+            }
         }
 
         if (contents == '\n') {
@@ -195,7 +218,7 @@ int parser(char fileName[]) {
         printf("Identifier Table:\n");
         for (int i = 1; i < TableSize; i++) {
             if (strcmp(symbolTable[i].IDs, "") != 0) {
-                printf("ID #%d: %s\n", i, symbolTable[i].IDs);
+                printf("ID #%d: %s INT FLAG:%d \n", i, symbolTable[i].IDs, symbolTable[i].intFlag);
             }
         }
         return PASS;
@@ -273,12 +296,25 @@ bool inputInSymbolTable(char input[]) {
             for (int i = 0; i < TableSize; i++) {
                 if (strcmp("", symbolTable[i].IDs) == 0) {
                     strcpy(symbolTable[i].IDs, input);
+                    if(intTag)
+                    {
+                    	symbolTable[i].intFlag = true;
+                    	printf("flag true");
+                    	printf("%s input in table\n", input);
+
+                    }
                     return true;
                 }
             }
         } else return false;
 
     }
+}
+
+bool checkIfIntTag(char input[]) {
+	if(strcmp("int", input) == 0)
+		return true;
+	return false;
 }
 
 void prediction(int def) {
@@ -288,6 +324,11 @@ void prediction(int def) {
         lookAhead[i] = -1;
     }
 
+      if(def == COMMA){
+    	printf("PREDICT WORKING\n");
+    	lookAhead[0] = ID;
+    }
+
     if (def == ID) {
 
 
@@ -295,7 +336,7 @@ void prediction(int def) {
         lookAhead[1] = OP;
         lookAhead[2] = RIGHT_PAR;
         lookAhead[3] = SEMICOLON;
-
+        lookAhead[4] = COMMA;
     }
 
     if (def == NUM) {
@@ -330,9 +371,13 @@ void prediction(int def) {
         lookAhead[2] = RIGHT_PAR;
     }
 
+
+
     if (def == SEMICOLON) {
         lookAhead[0] = ID;
     }
+
+    
 
 }
 

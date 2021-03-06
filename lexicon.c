@@ -1,12 +1,16 @@
 #include "lexicon.h"
 
 //ASCII Values for given types 
-int lexicon(char ch)
+int lexicon(char ch)  
 {
     if(ch == 32 || ch == '\t')
     {
         return SPACE;
     }  
+    else if(ch == 44)
+    {
+        return COMMA;
+    }
     else if(ch == 59)
     {
         return SEMICOLON;
@@ -47,6 +51,8 @@ int lexicon(char ch)
     {
         return DONE;
     }
+    
+    //else if( ch )
     else return ch;
 }
 
@@ -91,6 +97,11 @@ char *translator(int def)
     {
         strcpy(word, ")");
     }  
+
+    if(def == COMMA)
+    {
+        strcpy(word, ",");
+    }
    
 
     return word;
