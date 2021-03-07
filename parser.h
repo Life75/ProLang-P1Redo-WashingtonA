@@ -17,11 +17,12 @@ int parser(char fileName[]);
 bool syntaxChecker(char input[]);
 bool isBegin(char input[]);
 bool isEnd(char input[]);
-bool inputInSymbolTable(char input[]);
+bool inputInSymbolTable(char input[], int currentLine);
 void prediction(int def);
 bool match();
 int IDorNum(char input[]);
-bool checkIfIntTag(char input[], int currentLine);
+bool checkIfIntTag(char input[]);
+bool checkInit();
 
 extern bool hasEnd;
 extern bool hasBegin;

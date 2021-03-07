@@ -14,9 +14,9 @@ int parser(char fileName[]) {
 
     //init arrays and values 
     for (int i = 0; i < TableSize; i++) {
-        symbolTable->IDs[i] = "";
-        symbolTable->intFlag = false;
-        symbolTable->currentLine = -1;
+        symbolTable[i].IDs[i] = "";
+        symbolTable[i].intFlag = false;
+        symbolTable[i].currentLine = -1;
     }
 
     for (int i = 0; i < TableSize; i++) {
@@ -87,11 +87,7 @@ int parser(char fileName[]) {
             if (syntaxChecker(holder)) {
             	if(!checkIfIntTag(holder))
             	{
-           	    	if(!inputInSymbolTable(holder, linecount)) //TODO ADD ERROR CHECKING AT THE END TO CHECK IF INIT 
-           	    	{
-           	    		printf("Line: %d, error '%s' not initalized\n",linecount,holder);
-           	    		//return ERROR;
-           	    	}
+           	    	inputInSymbolTable(holder, linecount); //TODO ADD ERROR CHECKING AT THE END TO CHECK IF INIT 
             	} 
             } else {
                 if (strcmp(holder, "") != 0) {
@@ -212,6 +208,9 @@ int parser(char fileName[]) {
 
     }
     if (!match()) return ERROR;
+    if (!checkInit()) return ERROR;
+    
+     //return ERROR;
 
     fclose(file);
 
@@ -219,11 +218,28 @@ int parser(char fileName[]) {
         printf("Identifier Table:\n");
         for (int i = 1; i < TableSize; i++) {
             if (strcmp(symbolTable[i].IDs, "") != 0) {
-                printf("ID #%d: %s INT FLAG:%d \n", i, symbolTable[i].IDs, symbolTable[i].intFlag);
+                //if(symbolTable[i].intFlag == false)  printf("%d\n",symbolTable[i].currentLine);
+                printf("ID #%d: %s\n", i, symbolTable[i].IDs);
             }
         }
         return PASS;
     }
+}
+
+//checks all of the symbol table flags and see if they're initalized, if not returns false
+bool checkInit() {
+     for(int i=1; i < TableSize; i++)
+        {
+            if (strcmp(symbolTable, "") != 0) {
+            if(symbolTable[i].intFlag == false){
+                if(symbolTable[i].currentLine != -1) {
+                    printf("Line: %d error '%s' not initalized\n", symbolTable[i].currentLine, symbolTable[i].IDs);
+                    return false;
+                    }
+                }
+            }
+        }
+    return true;
 }
 
 bool syntaxChecker(char input[]) {
@@ -297,12 +313,11 @@ bool inputInSymbolTable(char input[], int currentLine) {
             for (int i = 0; i < TableSize; i++) {
                 if (strcmp("", symbolTable[i].IDs) == 0) {
                     strcpy(symbolTable[i].IDs, input);
+                    symbolTable[i].currentLine = currentLine;
                     if(intTag)
                     {
                     	symbolTable[i].intFlag = true;
-                    	symbolTable[i].currentLine = currentLine;
-                    	printf("%s input in table\n", input);
-
+                    	//printf("%s input in table\n", input); DELETE TODO
                     }
                     return true;
                 }

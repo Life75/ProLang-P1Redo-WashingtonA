@@ -1,6 +1,7 @@
 #ifndef SYMBOLTABLE_H_INCLUDED
 #define SYMBOLTABLE_H_INCLUDED
 #include <stdio.h>
+#include <stdbool.h>
 
 /*
 Banner Austyn Washington 
