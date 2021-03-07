@@ -33,6 +33,12 @@ struct TraceOn
     int statement;
     int currentLine;
 };
+
+struct ComputeTable
+{
+	char data[100];
+	int currentLine;
+};
 #endif
 
 

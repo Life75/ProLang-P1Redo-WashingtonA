@@ -7,6 +7,7 @@ int lookAhead[TableSize];
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
 struct TraceOn TraceOn[TableSize];
+struct ComputeTable computeTable[TableSize];
 
 
 
@@ -27,6 +28,12 @@ int parser(char fileName[]) {
         TraceOn[i].statement = -1;
         TraceOn[i].currentLine = -1;
     }
+
+    for (int i = 0; i < TableSize; i++) {
+        computeTable[i].data[i] = "";
+        computeTable[i].currentLine = -1;
+    }
+
 
 
     statementTable->eqCounter = 0;
@@ -148,14 +155,21 @@ int parser(char fileName[]) {
                         if (checker != ERROR) {
 
                             TraceOn[i].statement = checker;
+                            strcpy(computeTable[i].data, holder);
+
                             TraceOn[i].currentLine = linecount;
+                            computeTable[i].currentLine = linecount;
 
 
                         }
                         for (int j = 0; j < TableSize; j++) {
                             if (TraceOn[j].statement == -1) {
+
                                 TraceOn[j].statement = def;
                                 TraceOn[j].currentLine = linecount;
+
+                                computeTable[j].data[0] =  contents;
+                                computeTable[j].currentLine = linecount;
                                 break;
                             }
                         }
@@ -207,6 +221,18 @@ int parser(char fileName[]) {
         }
 
     }
+
+/* Parsed the data now you can do the compute in a seperate file function calling for a char input[] and doing the computational work behind it with
+    extra needed parsing TODO
+    for(int i=0; i < TableSize; i++)
+    {
+        if(computeTable[i].currentLine != -1)
+        {
+            printf("%s\n", computeTable[i].data);
+        }
+    }
+*/
+
     if (!match()) return ERROR;
     if (!checkInit()) return ERROR;
     
