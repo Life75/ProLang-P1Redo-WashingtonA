@@ -16,6 +16,7 @@ int parser(char fileName[]) {
     for (int i = 0; i < TableSize; i++) {
         symbolTable->IDs[i] = "";
         symbolTable->intFlag = false;
+        symbolTable->currentLine = -1;
     }
 
     for (int i = 0; i < TableSize; i++) {
@@ -77,20 +78,20 @@ int parser(char fileName[]) {
 
         if (def == OP || def == EQ || def == SEMICOLON || def == END || def == LEFT_PAR || def == RIGHT_PAR || def == COMMA) {
 
-        	//printf("%d\n", intTag);
             if (!hasBegin) {
                 printf("Line: %d error message: No 'begin'.\n", linecount);
                 return ERROR;
             }
 
 
-          
-            //else 
-
             if (syntaxChecker(holder)) {
             	if(!checkIfIntTag(holder))
             	{
-           	    	inputInSymbolTable(holder);
+           	    	if(!inputInSymbolTable(holder, linecount)) //TODO ADD ERROR CHECKING AT THE END TO CHECK IF INIT 
+           	    	{
+           	    		printf("Line: %d, error '%s' not initalized\n",linecount,holder);
+           	    		//return ERROR;
+           	    	}
             	} 
             } else {
                 if (strcmp(holder, "") != 0) {
@@ -190,7 +191,7 @@ int parser(char fileName[]) {
         	if(checkIfIntTag(holder))
             {
             	intTag = true;
-            	printf("heyo %s \n",holder);
+            	//printf("heyo %s \n",holder);
             	memset(holder, 0, strlen(holder));
             }
         }
@@ -283,7 +284,7 @@ bool isEnd(char input[]) {
 }
 
 
-bool inputInSymbolTable(char input[]) {
+bool inputInSymbolTable(char input[], int currentLine) {
     //check if its in already, if not then input return true, if it is then return false 
     bool copyFound = false;
     if (isalpha(input[0])) {
@@ -299,14 +300,14 @@ bool inputInSymbolTable(char input[]) {
                     if(intTag)
                     {
                     	symbolTable[i].intFlag = true;
-                    	printf("flag true");
+                    	symbolTable[i].currentLine = currentLine;
                     	printf("%s input in table\n", input);
 
                     }
                     return true;
                 }
             }
-        } else return false;
+        } else return true;
 
     }
 }
@@ -325,7 +326,6 @@ void prediction(int def) {
     }
 
       if(def == COMMA){
-    	printf("PREDICT WORKING\n");
     	lookAhead[0] = ID;
     }
 

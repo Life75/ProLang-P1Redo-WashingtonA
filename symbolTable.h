@@ -15,6 +15,7 @@ struct SymbolTable
 {
     char IDs[100]; 
     bool intFlag;
+    int currentLine;
 };
 
 //keeps track of the amount of EQ and LEFT_PAR RIGHT_PAR in a given statement 
