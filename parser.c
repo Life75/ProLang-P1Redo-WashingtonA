@@ -231,6 +231,12 @@ int parser(char fileName[]) {
             printf("%s\n", computeTable[i].data);
         }
     }
+
+
+
+    IMPORTANT NOTES: Create a stack based register. First get the NUM and IDs from the equation AFTER the EQ, then add the operands onto the stack, IF one of the contents is a LEFT PAR when getting the operands HOLD that 
+    value until you get to the RIGHT_PAR (once a right par is found add in the holder OP). Continually add the OPs onto the stack and then place an algorithm that goes through the stack until it finds its first operand then 
+    get the first ID/NUM values and make it the register spot of i, rinse wash and repeat this cycle until only one register is left in the stack.
 */
 
     if (!match()) return ERROR;
