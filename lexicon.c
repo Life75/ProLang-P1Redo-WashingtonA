@@ -3,6 +3,11 @@
 //ASCII Values for given types 
 int lexicon(char ch)  
 {
+
+    if(ch == 42 || ch == 43 || ch == 45 || ch == 47 || ch == 37)
+    {
+        return OP;
+    }
     if(ch == 32 || ch == '\t')
     {
         return SPACE;

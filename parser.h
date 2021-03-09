@@ -23,6 +23,8 @@ bool match();
 int IDorNum(char input[]);
 bool checkIfIntTag(char input[]);
 bool checkInit();
+void registerComp();
+void computeLine(int index);
 
 extern bool hasEnd;
 extern bool hasBegin;

@@ -241,6 +241,7 @@ int parser(char fileName[]) {
 
     if (!match()) return ERROR;
     if (!checkInit()) return ERROR;
+    registerComp();
     
      //return ERROR;
 
@@ -479,5 +480,101 @@ int IDorNum(char input[]) {
         return ID;
     }
     return ERROR;
+
+}
+
+void registerComp() {
+
+    for(int i=0; i < TableSize; i++)
+    {
+        if(computeTable[i].currentLine != -1)
+        {
+            //printf("%s\n", computeTable[i].data);
+            if(strcmp(computeTable[i].data, "=")==0) 
+                computeLine(i);
+        }
+    }
+
+}
+
+void computeLine(int index)
+{
+    //printf("%s ", computeTable[i-1].data);
+    char finalLHS[TableSize];
+    strcpy(finalLHS,computeTable[index-1].data);
+    struct ComputeTable defOrNumHolder[TableSize];
+    struct ComputeTable opHolder[TableSize];
+
+    for (int i = 0; i < TableSize; i++) {
+        defOrNumHolder[i].data[i] = "";
+        defOrNumHolder[i].currentLine = -1;
+    }
+
+    for(int i=0; i < TableSize; i++)
+    {
+        opHolder[i].data[i] = "";
+        opHolder[i].currentLine = -1;
+    }
+
+    //reading the contents of the expression 
+    int defCount =0;
+    int opCount =0;
+    index++;
+    while(1)
+    {
+        
+        if(strcmp(computeTable[index].data, ";") == 0 )
+        {
+            //printf("here i am\n");
+            break;
+        }
+       
+        
+        int def = lexicon(computeTable[index].data[0]);
+
+        if(def == ID || def == NUM)
+        {
+            //if (def == ID) printf("here: |%s| ", computeTable[index].data);
+            strcpy(defOrNumHolder[defCount].data, computeTable[index].data);
+            defOrNumHolder[defCount].currentLine = computeTable[index].currentLine;
+            defCount++;
+        }
+
+        if(def == OP)
+        {
+            //check if left par and place in the holder for further placement 
+            int check = lexicon(computeTable[index+1].data);
+            if(check == LEFT_PAR)
+            {
+                //TODO create a holder for later placement
+            }
+
+            strcpy(opHolder[opCount].data, computeTable[index].data);
+            opHolder[opCount].currentLine = computeTable[index].currentLine;
+            opCount++;
+        }
+        index++;
+    }
+
+    for(int i=0; i < TableSize; i++)
+    {
+        if(defOrNumHolder[i].currentLine == -1)
+            break;
+
+        printf("R%d: %s\n",i ,defOrNumHolder[i].data);    
+    }
+    
+    for(int i=0; i < TableSize; i++)
+    {
+        if(opHolder[i].currentLine == -1) 
+            break;
+
+        printf("%s ", opHolder[i].data);
+    }
+
+
+    printf("\n----------------------------------\n");
+
+
 
 }
