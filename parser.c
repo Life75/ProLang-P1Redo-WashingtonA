@@ -526,7 +526,9 @@ void computeLine(int index)
     //reading the contents of the expression 
     int defCount =0;
     int opCount =0;
-
+    bool check = true;
+    int r =0;
+    char postFix[100];
     index++;
     while(1)
     {
@@ -537,7 +539,58 @@ void computeLine(int index)
             break;
         }
        
-        
+       
+       int def = lexicon(computeTable[index].data[0]);
+
+       //printf("%d", def);
+
+if (check)
+{
+    if(def == ID || def == NUM)
+    {
+        printf("R%d= %s\n",r, computeTable[index].data);
+       // r++;
+    }
+}
+    
+
+
+    if(def == OP)
+    {
+        //if (lookAhead = LEFT_PAR)
+        int next = lexicon(computeTable[index+1].data[0]);
+
+        if(next == ID || next == NUM)
+        {
+            check = false;
+            r++;
+            printf("R%d= %s\n", r, computeTable[index+1].data);
+            int rSub = r -1;
+            printf("R%d= R%d ",rSub, rSub);
+            printf("%s R%d\n", computeTable[index].data, r);
+        }
+        r--;
+    }
+       //printf("R%d: ", i)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
         int def = lexicon(computeTable[index].data[0]);
 
         if(def == ID || def == NUM)
@@ -578,7 +631,7 @@ void computeLine(int index)
                                                                                 r0 = r0 + 2
                                                                                 LHS = r0
         
-        */if(def == OP)
+        if(def == OP)
         {
             //check if left par and place in the holder for further placement 
             int check = lexicon(computeTable[index+1].data);
@@ -609,9 +662,10 @@ void computeLine(int index)
 
             
         }
-        index++;
+        index++;*/
+       index++;
     }
-
+/*
     for(int i=0; i < TableSize; i++)
     {
         if(defOrNumHolder[i].currentLine == -1)
@@ -629,7 +683,7 @@ void computeLine(int index)
     }
 
 
-
+*/
     //comp 
     //for(int i=0;)
 

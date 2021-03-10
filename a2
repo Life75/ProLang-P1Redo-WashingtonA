@@ -1,6 +1,6 @@
 begin
 int a,b;
-  a = (6 * (1/1) + 2);
-  a = b+2;
+  a = b;
+  a = b+2+b;
 end.
 
