@@ -504,6 +504,7 @@ void computeLine(int index)
     strcpy(finalLHS,computeTable[index-1].data);
     struct ComputeTable defOrNumHolder[TableSize];
     struct ComputeTable opHolder[TableSize];
+    struct ComputeTable parHolder[TableSize];
 
     for (int i = 0; i < TableSize; i++) {
         defOrNumHolder[i].data[i] = "";
@@ -512,13 +513,20 @@ void computeLine(int index)
 
     for(int i=0; i < TableSize; i++)
     {
-        opHolder[i].data[i] = "";
+        strcpy(opHolder[i].data, "");
         opHolder[i].currentLine = -1;
+    }
+
+    for(int i=0; i < TableSize; i++)
+    {
+        parHolder[i].data[i] = "";
+        parHolder[i].currentLine = -1;
     }
 
     //reading the contents of the expression 
     int defCount =0;
     int opCount =0;
+
     index++;
     while(1)
     {
@@ -540,18 +548,66 @@ void computeLine(int index)
             defCount++;
         }
 
-        if(def == OP)
+        if(def == RIGHT_PAR)
+        {
+
+            for(int i=1; i < TableSize; i++)
+            {
+
+                if(parHolder[i].currentLine == -1)
+                {
+                    printf("here\n");
+                    break;
+                }
+
+                if(parHolder[i].data[0] != "" || parHolder[i].currentLine != -2)
+                {
+                    printf("here\n");
+                    strcpy(opHolder[opCount].data ,parHolder[i].data);
+                    strcpy(parHolder[i].data, "");
+                    printf("%s %d \n", opHolder[opCount].data, opCount);
+                    parHolder[i].currentLine = -2;
+                    opCount++;
+                }   
+
+            }
+        }
+/*Try placing the contents in one array so for 6 * (a/b) + 2 itlls come out as 6 a b / * + 2
+                                                                                r1
+                                                                                r0 = 6 * r1
+                                                                                r0 = r0 + 2
+                                                                                LHS = r0
+        
+        */if(def == OP)
         {
             //check if left par and place in the holder for further placement 
             int check = lexicon(computeTable[index+1].data);
-            if(check == LEFT_PAR)
+            //printf("%s\n", computeTable[index+1].data);
+
+            if(computeTable[index+1].data[0] == '(')
             {
+                //printf("left check\n");
+                for(int i=0; i < TableSize; i++)
+                {
+                    if(strcmp(parHolder[i].data, "") == 0)
+                    {
+                        //printf("%d,left check\n", i);
+                        strcpy(parHolder[i].data,computeTable[index].data);
+                        parHolder[i].currentLine = 1;
+                        break;
+                    }
+                }
                 //TODO create a holder for later placement
             }
+            else 
+            {
+                strcpy(opHolder[opCount].data, computeTable[index].data);
+                printf("%d\n", opCount);
+                opHolder[opCount].currentLine = 
+                opCount++;    
+            }
 
-            strcpy(opHolder[opCount].data, computeTable[index].data);
-            opHolder[opCount].currentLine = computeTable[index].currentLine;
-            opCount++;
+            
         }
         index++;
     }
@@ -566,11 +622,16 @@ void computeLine(int index)
     
     for(int i=0; i < TableSize; i++)
     {
-        if(opHolder[i].currentLine == -1) 
+        if(strcmp(opHolder[i].data,"") == 0) 
             break;
 
-        printf("%s ", opHolder[i].data);
+        printf("|%s|", opHolder[i].data);
     }
+
+
+
+    //comp 
+    //for(int i=0;)
 
 
     printf("\n----------------------------------\n");
