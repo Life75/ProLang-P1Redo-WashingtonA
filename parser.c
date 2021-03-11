@@ -563,11 +563,12 @@ if (check)
         if(next == ID || next == NUM)
         {
             check = false;
-            //r++;
+            
             printf("R%d= %s\n", r, computeTable[index+1].data);
             int rSub = r -1;
             printf("R%d= R%d ",rSub, rSub);
             printf("%s R%d\n", computeTable[index].data, r);
+            r++;
         }
 
         if(next == LEFT_PAR)
