@@ -1,6 +1,6 @@
 begin
 int a,b;
-  a = b;
-  a = b+2+b;
+  a = 6 + (a/b);
+  a = b+2;
 end.
 

@@ -549,7 +549,7 @@ if (check)
     if(def == ID || def == NUM)
     {
         printf("R%d= %s\n",r, computeTable[index].data);
-       // r++;
+        r++;
     }
 }
     
@@ -563,11 +563,20 @@ if (check)
         if(next == ID || next == NUM)
         {
             check = false;
-            r++;
+            //r++;
             printf("R%d= %s\n", r, computeTable[index+1].data);
             int rSub = r -1;
             printf("R%d= R%d ",rSub, rSub);
             printf("%s R%d\n", computeTable[index].data, r);
+        }
+
+        if(next == LEFT_PAR)
+        { check = false;
+            int oldIndex = index;
+            index = expression(r, index);
+            int rSub = r -1;
+            printf("R%d= R%d ", rSub, rSub);
+            printf("%s R%d\n", computeTable[oldIndex].data, r);
         }
         r--;
     }
@@ -578,7 +587,7 @@ if (check)
 
 
 
-
+// 6
 
 
 
@@ -692,4 +701,47 @@ if (check)
 
 
 
+}
+
+int expression(int r, int index)
+{
+    bool check = true;
+    while(1)
+    {
+        int def = lexicon(computeTable[index].data[0]);
+        if (check){
+            if(def == ID || def == NUM)
+            {
+                printf("R%d= %s\n",r, computeTable[index].data);
+            }
+        }
+        
+
+        if(def == OP)
+        {
+            int next = lexicon(computeTable[index+1].data[0]);
+
+            if(next == ID || next == NUM)
+            {
+                check = false;
+                r++;
+                printf("R%d= %s\n", r, computeTable[index+1].data);
+                int rSub = r -1;
+                printf("R%d= R%d ",rSub, rSub);
+                printf("%s R%d\n", computeTable[index].data, r);
+            }
+
+            //r--;
+        }
+        
+
+
+        if(def == RIGHT_PAR)
+        {
+            break;
+        }
+        
+        index++;
+    } 
+    return index;
 }

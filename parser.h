@@ -25,6 +25,7 @@ bool checkIfIntTag(char input[]);
 bool checkInit();
 void registerComp();
 void computeLine(int index);
+int expression(int r, int index);
 
 extern bool hasEnd;
 extern bool hasBegin;
