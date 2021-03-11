@@ -529,7 +529,7 @@ void computeLine(int index)
     bool check = true;
     int r =0;
     char postFix[100];
-    index++;
+    index++; //honestly not sure how this all works, it just does 
     while(1)
     {
         
@@ -578,6 +578,7 @@ if (check)
             int rSub = r -1;
             printf("R%d= R%d ", rSub, rSub);
             printf("%s R%d\n", computeTable[oldIndex].data, r);
+            r++;
         }
         r--;
     }
@@ -714,6 +715,7 @@ int expression(int r, int index)
             if(def == ID || def == NUM)
             {
                 printf("R%d= %s\n",r, computeTable[index].data);
+
             }
         }
         
@@ -721,7 +723,7 @@ int expression(int r, int index)
         if(def == OP)
         {
             int next = lexicon(computeTable[index+1].data[0]);
-
+            //check if its to multiply or divide and place priority over +  and  - operations 
             if(next == ID || next == NUM)
             {
                 check = false;
@@ -731,6 +733,12 @@ int expression(int r, int index)
                 printf("R%d= R%d ",rSub, rSub);
                 printf("%s R%d\n", computeTable[index].data, r);
             }
+
+            if(next == LEFT_PAR)
+            {
+                //printf("here i am\n");
+            }
+         
 
             //r--;
         }
