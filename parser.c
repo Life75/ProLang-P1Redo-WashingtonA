@@ -239,6 +239,7 @@ int parser(char fileName[]) {
     get the first ID/NUM values and make it the register spot of i, rinse wash and repeat this cycle until only one register is left in the stack.
 */
 
+    if(!hasBegin && !hasEnd) return ERROR;
     if (!match()) return ERROR;
     if (!checkInit()) return ERROR;
     registerComp();
@@ -559,16 +560,50 @@ if (check)
     {
         //if (lookAhead = LEFT_PAR)
         int next = lexicon(computeTable[index+1].data[0]);
+        bool opCheck = false;
+
 
         if(next == ID || next == NUM)
         {
             check = false;
+
+            int afterNext = lexicon(computeTable[index+2].data[0]);
+
+            if(afterNext == OP)
+            {
+                if(strcmp(computeTable[index+2].data, "*") == 0 || strcmp(computeTable[index+2].data, "/") == 0)
+                {
+                    int rOp = r + 1;
+                    printf("R%d= %s\n", r,computeTable[index+1].data);
+                    printf("R%d= %s\n", rOp, computeTable[index+3].data);
+                    int rSub = r -1;
+                    printf("R%d= R%d ",r, r);
+                    printf("%s R%d\n", computeTable[index+2].data, rOp);
+                    r--;
+                    rOp = r +1 ;
+                    printf("R%d= R%d ", r, r);
+                    printf("%s R%d\n", computeTable[index].data, rOp);
+
+
+
+
+                    r++;
+                    opCheck =true;
+                    index = index + 3;
+                    r++;
+                }
+            }
+            if (!opCheck)
+            {
+                printf("R%d= %s\n", r, computeTable[index+1].data);
+                int rSub = r -1;
+                printf("R%d= R%d ",rSub, rSub);
+                printf("%s R%d\n", computeTable[index].data, r);
+                r++;
+            }
+
             
-            printf("R%d= %s\n", r, computeTable[index+1].data);
-            int rSub = r -1;
-            printf("R%d= R%d ",rSub, rSub);
-            printf("%s R%d\n", computeTable[index].data, r);
-            r++;
+            
         }
 
         if(next == LEFT_PAR)
