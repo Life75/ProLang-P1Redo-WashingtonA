@@ -4,11 +4,12 @@ bool hasEnd = false;
 bool hasBegin = false;
 bool intTag = false;
 int lookAhead[TableSize];
+int postFixCounter;
 struct SymbolTable symbolTable[TableSize];
 struct StatementTable statementTable[TableSize];
 struct TraceOn TraceOn[TableSize];
 struct ComputeTable computeTable[TableSize];
-
+struct ComputeTable postFix[TableSize];
 
 
 int parser(char fileName[]) {
@@ -500,56 +501,45 @@ void registerComp() {
 
 void computeLine(int index)
 {
-    //printf("%s ", computeTable[i-1].data);
     char finalLHS[TableSize];
     strcpy(finalLHS,computeTable[index-1].data);
-    struct ComputeTable defOrNumHolder[TableSize];
-    struct ComputeTable opHolder[TableSize];
-    struct ComputeTable parHolder[TableSize];
-
-    for (int i = 0; i < TableSize; i++) {
-        defOrNumHolder[i].data[i] = "";
-        defOrNumHolder[i].currentLine = -1;
-    }
 
     for(int i=0; i < TableSize; i++)
     {
-        strcpy(opHolder[i].data, "");
-        opHolder[i].currentLine = -1;
+        strcpy(postFix[i].data, "");
+        postFix[i].currentLine = -1;
     }
 
-    for(int i=0; i < TableSize; i++)
-    {
-        parHolder[i].data[i] = "";
-        parHolder[i].currentLine = -1;
-    }
+    postFixCounter =0;
+
 
     //reading the contents of the expression 
-    int defCount =0;
-    int opCount =0;
+    
     bool check = true;
     int r =0;
-    char postFix[100];
     index++; //honestly not sure how this all works, it just does 
     while(1)
     {
         
         if(strcmp(computeTable[index].data, ";") == 0 )
         {
-            //printf("here i am\n");
+            
             break;
         }
        
        
        int def = lexicon(computeTable[index].data[0]);
 
-       //printf("%d", def);
+      
 
 if (check)
 {
     if(def == ID || def == NUM)
     {
-        printf("R%d= %s\n",r, computeTable[index].data);
+        printf("R%d = %s\n",r, computeTable[index].data);
+        
+        strcpy(postFix[postFixCounter].data,computeTable[index].data);
+        postFixCounter++;
         r++;
     }
 }
@@ -558,7 +548,7 @@ if (check)
 
     if(def == OP)
     {
-        //if (lookAhead = LEFT_PAR)
+        
         int next = lexicon(computeTable[index+1].data[0]);
         bool opCheck = false;
 
@@ -574,15 +564,28 @@ if (check)
                 if(strcmp(computeTable[index+2].data, "*") == 0 || strcmp(computeTable[index+2].data, "/") == 0)
                 {
                     int rOp = r + 1;
-                    printf("R%d= %s\n", r,computeTable[index+1].data);
-                    printf("R%d= %s\n", rOp, computeTable[index+3].data);
+                    printf("R%d = %s\n", r,computeTable[index+1].data);
+                    strcpy(postFix[postFixCounter].data, computeTable[index+1].data);
+                    postFixCounter++;
+
+
+                    printf("R%d = %s\n", rOp, computeTable[index+3].data);
+                    strcpy(postFix[postFixCounter].data, computeTable[index+3].data);
+                    postFixCounter++;
+
                     int rSub = r -1;
-                    printf("R%d= R%d ",r, r);
+                    printf("R%d = R%d ",r, r);
                     printf("%s R%d\n", computeTable[index+2].data, rOp);
+                    strcpy(postFix[postFixCounter].data, computeTable[index+2].data);
+                    postFixCounter++;
+
+
                     r--;
                     rOp = r +1 ;
-                    printf("R%d= R%d ", r, r);
+                    printf("R%d = R%d ", r, r);
                     printf("%s R%d\n", computeTable[index].data, rOp);
+                    strcpy(postFix[postFixCounter].data, computeTable[index].data);
+                    postFixCounter++;
 
 
 
@@ -595,10 +598,15 @@ if (check)
             }
             if (!opCheck)
             {
-                printf("R%d= %s\n", r, computeTable[index+1].data);
+                printf("R%d = %s\n", r, computeTable[index+1].data);
+                strcpy(postFix[postFixCounter].data, computeTable[index+1].data);
+                postFixCounter++;
                 int rSub = r -1;
-                printf("R%d= R%d ",rSub, rSub);
+                printf("R%d = R%d ",rSub, rSub);
+                
                 printf("%s R%d\n", computeTable[index].data, r);
+                strcpy(postFix[postFixCounter].data, computeTable[index].data);
+                postFixCounter++;
                 r++;
             }
 
@@ -611,133 +619,19 @@ if (check)
             int oldIndex = index;
             index = expression(r, index);
             int rSub = r -1;
-            printf("R%d= R%d ", rSub, rSub);
+            printf("R%d = R%d ", rSub, rSub);
             printf("%s R%d\n", computeTable[oldIndex].data, r);
+            strcpy(postFix[postFixCounter].data, computeTable[oldIndex].data);
+            postFixCounter++;
             r++;
         }
         r--;
     }
-       //printf("R%d: ", i)
-
-
-
-
-
-
-// 6
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        int def = lexicon(computeTable[index].data[0]);
-
-        if(def == ID || def == NUM)
-        {
-            //if (def == ID) printf("here: |%s| ", computeTable[index].data);
-            strcpy(defOrNumHolder[defCount].data, computeTable[index].data);
-            defOrNumHolder[defCount].currentLine = computeTable[index].currentLine;
-            defCount++;
-        }
-
-        if(def == RIGHT_PAR)
-        {
-
-            for(int i=1; i < TableSize; i++)
-            {
-
-                if(parHolder[i].currentLine == -1)
-                {
-                    printf("here\n");
-                    break;
-                }
-
-                if(parHolder[i].data[0] != "" || parHolder[i].currentLine != -2)
-                {
-                    printf("here\n");
-                    strcpy(opHolder[opCount].data ,parHolder[i].data);
-                    strcpy(parHolder[i].data, "");
-                    printf("%s %d \n", opHolder[opCount].data, opCount);
-                    parHolder[i].currentLine = -2;
-                    opCount++;
-                }   
-
-            }
-        }
-/*Try placing the contents in one array so for 6 * (a/b) + 2 itlls come out as 6 a b / * + 2
-                                                                                r1
-                                                                                r0 = 6 * r1
-                                                                                r0 = r0 + 2
-                                                                                LHS = r0
-        
-        if(def == OP)
-        {
-            //check if left par and place in the holder for further placement 
-            int check = lexicon(computeTable[index+1].data);
-            //printf("%s\n", computeTable[index+1].data);
-
-            if(computeTable[index+1].data[0] == '(')
-            {
-                //printf("left check\n");
-                for(int i=0; i < TableSize; i++)
-                {
-                    if(strcmp(parHolder[i].data, "") == 0)
-                    {
-                        //printf("%d,left check\n", i);
-                        strcpy(parHolder[i].data,computeTable[index].data);
-                        parHolder[i].currentLine = 1;
-                        break;
-                    }
-                }
-                //TODO create a holder for later placement
-            }
-            else 
-            {
-                strcpy(opHolder[opCount].data, computeTable[index].data);
-                printf("%d\n", opCount);
-                opHolder[opCount].currentLine = 
-                opCount++;    
-            }
-
-            
-        }
-        index++;*/
+ 
        index++;
     }
-/*
-    for(int i=0; i < TableSize; i++)
-    {
-        if(defOrNumHolder[i].currentLine == -1)
-            break;
-
-        printf("R%d: %s\n",i ,defOrNumHolder[i].data);    
-    }
-    
-    for(int i=0; i < TableSize; i++)
-    {
-        if(strcmp(opHolder[i].data,"") == 0) 
-            break;
-
-        printf("|%s|", opHolder[i].data);
-    }
-
-
-*/
-    //comp 
-    //for(int i=0;)
-
-
-    printf("\n----------------------------------\n");
-
-
-
+    printf("%s = r0\n", finalLHS);
+    printPostFix();
 }
 
 int expression(int r, int index)
@@ -750,6 +644,8 @@ int expression(int r, int index)
             if(def == ID || def == NUM)
             {
                 printf("R%d= %s\n",r, computeTable[index].data);
+                strcpy(postFix[postFixCounter].data, computeTable[index].data);
+                postFixCounter++;
 
             }
         }
@@ -763,19 +659,17 @@ int expression(int r, int index)
             {
                 check = false;
                 r++;
-                printf("R%d= %s\n", r, computeTable[index+1].data);
+                printf("R%d = %s\n", r, computeTable[index+1].data);
+                strcpy(postFix[postFixCounter].data, computeTable[index+1].data);
+                postFixCounter++;
                 int rSub = r -1;
-                printf("R%d= R%d ",rSub, rSub);
+                printf("R%d = R%d ",rSub, rSub);
                 printf("%s R%d\n", computeTable[index].data, r);
+                strcpy(postFix[postFixCounter].data, computeTable[index].data);
+                postFixCounter++;
             }
 
-            if(next == LEFT_PAR)
-            {
-                //printf("here i am\n");
-            }
          
-
-            //r--;
         }
         
 
@@ -788,4 +682,20 @@ int expression(int r, int index)
         index++;
     } 
     return index;
+}
+
+void printPostFix()
+{
+    printf("***************");
+
+    for(int i=0; i < TableSize; i++)
+    {
+        //if(strcmp(postFix[i+1].data, "") ==0) break;
+        if(strcmp(postFix[i].data, "") !=0 && postFix[i].data[0] != "")
+        {
+            printf("%s, ", postFix[i].data);
+        }
+    }
+    printf("****************\n");
+    return;
 }
