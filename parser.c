@@ -60,18 +60,14 @@ int parser(char fileName[]) {
 
     while (1) {
 
-
-
         contents = fgetc(file);
-
-
         def = lexicon(contents);
 
 
 
         //if comment ignore until \n
         if (def == COMMENT) {
-            //printf("comment here skip line\n");
+            
             while (contents != '\n') {
                 contents = fgetc(file);
 
@@ -95,7 +91,7 @@ int parser(char fileName[]) {
             if (syntaxChecker(holder)) {
             	if(!checkIfIntTag(holder))
             	{
-           	    	inputInSymbolTable(holder, linecount); //TODO ADD ERROR CHECKING AT THE END TO CHECK IF INIT 
+           	    	inputInSymbolTable(holder, linecount); 
             	} 
             } else {
                 if (strcmp(holder, "") != 0) {
@@ -202,7 +198,6 @@ int parser(char fileName[]) {
         	if(checkIfIntTag(holder))
             {
             	intTag = true;
-            	//printf("heyo %s \n",holder);
             	memset(holder, 0, strlen(holder));
             }
         }
@@ -223,42 +218,13 @@ int parser(char fileName[]) {
 
     }
 
-/* Parsed the data now you can do the compute in a seperate file function calling for a char input[] and doing the computational work behind it with
-    extra needed parsing TODO
-    for(int i=0; i < TableSize; i++)
-    {
-        if(computeTable[i].currentLine != -1)
-        {
-            printf("%s\n", computeTable[i].data);
-        }
-    }
-
-
-
-    IMPORTANT NOTES: Create a stack based register. First get the NUM and IDs from the equation AFTER the EQ, then add the operands onto the stack, IF one of the contents is a LEFT PAR when getting the operands HOLD that 
-    value until you get to the RIGHT_PAR (once a right par is found add in the holder OP). Continually add the OPs onto the stack and then place an algorithm that goes through the stack until it finds its first operand then 
-    get the first ID/NUM values and make it the register spot of i, rinse wash and repeat this cycle until only one register is left in the stack.
-*/
-
     if(!hasBegin && !hasEnd) return ERROR;
     if (!match()) return ERROR;
     if (!checkInit()) return ERROR;
     registerComp();
-    
-     //return ERROR;
 
     fclose(file);
-
-    if (hasBegin && hasEnd) {
-        printf("Identifier Table:\n");
-        for (int i = 1; i < TableSize; i++) {
-            if (strcmp(symbolTable[i].IDs, "") != 0) {
-                //if(symbolTable[i].intFlag == false)  printf("%d\n",symbolTable[i].currentLine);
-                printf("ID #%d: %s\n", i, symbolTable[i].IDs);
-            }
-        }
-        return PASS;
-    }
+    return PASS;
 }
 
 //checks all of the symbol table flags and see if they're initalized, if not returns false
@@ -352,7 +318,6 @@ bool inputInSymbolTable(char input[], int currentLine) {
                     if(intTag)
                     {
                     	symbolTable[i].intFlag = true;
-                    	//printf("%s input in table\n", input); DELETE TODO
                     }
                     return true;
                 }
@@ -426,9 +391,6 @@ void prediction(int def) {
     if (def == SEMICOLON) {
         lookAhead[0] = ID;
     }
-
-    
-
 }
 
 bool match() {
@@ -491,7 +453,6 @@ void registerComp() {
     {
         if(computeTable[i].currentLine != -1)
         {
-            //printf("%s\n", computeTable[i].data);
             if(strcmp(computeTable[i].data, "=")==0) 
                 computeLine(i);
         }
@@ -517,7 +478,7 @@ void computeLine(int index)
     
     bool check = true;
     int r =0;
-    index++; //honestly not sure how this all works, it just does 
+    index++; 
     while(1)
     {
         
@@ -532,17 +493,17 @@ void computeLine(int index)
 
       
 
-if (check)
-{
-    if(def == ID || def == NUM)
-    {
-        printf("R%d = %s\n",r, computeTable[index].data);
-        
-        strcpy(postFix[postFixCounter].data,computeTable[index].data);
-        postFixCounter++;
-        r++;
-    }
-}
+        if (check)
+        {
+            if(def == ID || def == NUM)
+            {
+                printf("R%d = %s\n",r, computeTable[index].data);
+                
+                strcpy(postFix[postFixCounter].data,computeTable[index].data);
+                postFixCounter++;
+                r++;
+            }
+        }
     
 
 
@@ -559,7 +520,7 @@ if (check)
 
             int afterNext = lexicon(computeTable[index+2].data[0]);
 
-            if(afterNext == OP)
+            if(afterNext == OP && strcmp(computeTable[index].data, "*") != 0 && strcmp(computeTable[index].data, "/") !=0)
             {
                 if(strcmp(computeTable[index+2].data, "*") == 0 || strcmp(computeTable[index+2].data, "/") == 0)
                 {
@@ -643,14 +604,14 @@ int expression(int r, int index)
         if (check){
             if(def == ID || def == NUM)
             {
-                printf("R%d= %s\n",r, computeTable[index].data);
+                printf("R%d = %s\n",r, computeTable[index].data);
                 strcpy(postFix[postFixCounter].data, computeTable[index].data);
                 postFixCounter++;
+                r--;
 
             }
         }
         
-
         if(def == OP)
         {
             int next = lexicon(computeTable[index+1].data[0]);
@@ -667,13 +628,9 @@ int expression(int r, int index)
                 printf("%s R%d\n", computeTable[index].data, r);
                 strcpy(postFix[postFixCounter].data, computeTable[index].data);
                 postFixCounter++;
-            }
-
-         
+            }         
         }
         
-
-
         if(def == RIGHT_PAR)
         {
             break;
@@ -686,16 +643,20 @@ int expression(int r, int index)
 
 void printPostFix()
 {
-    printf("***************");
+    printf("***************[");
 
-    for(int i=0; i < TableSize; i++)
+    for(int i=0; i < postFixCounter; i++)
     {
-        //if(strcmp(postFix[i+1].data, "") ==0) break;
         if(strcmp(postFix[i].data, "") !=0 && postFix[i].data[0] != "")
         {
-            printf("%s, ", postFix[i].data);
+            printf("%s", postFix[i].data);
+
+            if(i != postFixCounter-1)
+            {
+                printf(",");
+            }
         }
     }
-    printf("****************\n");
+    printf("]***************\n");
     return;
 }
