@@ -3,6 +3,16 @@
 #include <stdio.h>
 #include <string.h>
 
+/***************************************
+Banner: Austyn Washington 
+3/13/2021
+
+Lexicon adds the functionality for determining what the value was given when parsed defining the diffenent myriad value types ex: ID, NUM, etc 
+
+translator does the reverse of lexicon and translates the given value
+
+****************************************/
+
 #define ID 300
 #define NUM 301
 #define EQ 302

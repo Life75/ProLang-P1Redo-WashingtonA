@@ -33,7 +33,7 @@ struct TraceOn
     int statement;
     int currentLine;
 };
-
+//Holding the values for computation arithmetic after doing error checking
 struct ComputeTable
 {
 	char data[100];

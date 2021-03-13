@@ -47,7 +47,7 @@ int parser(char fileName[]) {
 
 
     if (file == NULL) {
-        printf("opening file error: %s", fileName);
+        printf("opening file error: %s \n", fileName);
         return ERROR;
     }
 

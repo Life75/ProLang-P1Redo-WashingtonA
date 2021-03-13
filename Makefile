@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -g -std=c++11 -Wall -ftest-coverage -fprofile-arcs
 
 SRCS = $(wildcard *.hpp)
-OBJECTS = lexicon.o parser.o symbolTable.o register.o$(SRCS:%.hpp=%.o) 
+OBJECTS = lexicon.o parser.o symbolTable.o $(SRCS:%.hpp=%.o) 
 
 main: $(OBJECTS) main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^

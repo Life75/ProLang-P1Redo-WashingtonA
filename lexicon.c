@@ -55,9 +55,7 @@ int lexicon(char ch)
     else if (ch == EOF)
     {
         return DONE;
-    }
-    
-    //else if( ch )
+    }    
     else return ch;
 }
 
